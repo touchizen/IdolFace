@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_splash_screen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@android:color/background_light">
+
+    <!--com.lucem.anb.cardslide2.SliderAnimate
+        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/image_header_top_margin"
+        android:layout_gravity="center"
+        app:start="bottom"
+        android:id="@+id/slider_animate"
+        android:layout_height="wrap_content"-->
+
+    <ImageView
+        android:id="@+id/header_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp"
+        android:src="@mipmap/ic_launcher"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/setup_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:text= "@string/slogan"
+        android:background="@android:color/transparent"
+        android:textColor="@color/colorGrey"
+        android:textSize="20sp"/>
+    <!--TextView
+        android:id="@+id/setup_title2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/setup_title"
+        android:text= "@string/slogan2"
+        android:background="@android:color/transparent"
+        android:textColor="@color/av_custom_bg"
+        android:textSize="20sp"/-->
+    <!--/com.lucem.anb.cardslide2.SliderAnimate-->
+</RelativeLayout>

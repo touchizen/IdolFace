@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View" />
+
+        <variable
+            name="viewmodel"
+            type="com.touchizen.idolface.ui.myidolprofile.MyIdolProfileViewModel" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout style="@style/StyleRoot">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/regForm"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    style="@style/VView"
+                    android:layout_marginTop="35dp"
+                    android:gravity="center_horizontal"
+                    android:padding="12dp">
+
+                    <RelativeLayout
+                        android:layout_width="110dp"
+                        android:layout_height="110dp">
+
+                        <ImageView
+                            android:id="@+id/img_pro_pic"
+                            style="@style/FView"
+                            android:src="@drawable/ic_other_person"
+                            app:imageUrl="@{viewmodel.idolProfile.image}"/>
+
+                        <ProgressBar
+                            android:id="@+id/progress_pro"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_centerInParent="true"
+                            android:visibility="@{viewmodel.progressProPic ? View.VISIBLE : View.GONE}" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/VView"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:hint="@string/txt_name">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                style="@style/StyleEdtInput"
+                                android:id="@+id/edt_name"
+                                android:inputType="textPersonName|textCapWords"
+                                android:text="@={viewmodel.idolProfile.name}" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.github.angads25.toggle.widget.LabeledSwitch
+                            android:id="@+id/gender_switch"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:gravity="center"
+                            android:textSize="20sp"
+                            app:textOn="@string/male"
+                            app:textOff="@string/female"
+                            android:layout_gravity="center_vertical"
+                            app:on="true"
+                            app:colorOn="@android:color/holo_blue_bright"
+                            app:colorOff="@android:color/white"
+                            app:colorBorder="@android:color/holo_red_light"/>
+                    </RelativeLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/VView"
+                        android:layout_marginTop="5dp"
+                        android:hint="@string/txt_oldname">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            style="@style/StyleEdtInput"
+                            android:id="@+id/edt_oldname"
+                            android:enabled="false"
+                            android:textColor="@android:color/darker_gray"
+                            android:inputType="textPersonName|textCapWords"
+                            android:text="@={viewmodel.idolProfile.oldName}" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/VView"
+                        android:layout_marginTop="15dp"
+                        android:hint="@string/txt_group_name">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            style="@style/StyleEdtInput"
+                            android:id="@+id/edt_groupName"
+                            android:inputType="textPersonName|textCapWords"
+                            android:text="@={viewmodel.idolProfile.groupName}" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/VView"
+                        android:layout_marginTop="15dp"
+                        android:hint="@string/txt_company">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            style="@style/StyleEdtInput"
+                            android:id="@+id/edt_company"
+                            android:inputType="textPersonName|textCapWords"
+                            android:text="@={viewmodel.idolProfile.company}" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        style="@style/LView"
+                        android:layout_marginTop="50dp"
+                        android:layout_marginBottom="30dp">
+
+                        <!--TextView
+                            android:id="@+id/btn_logout"
+                            style="@style/StyleButton"
+                            android:layout_marginEnd="5dp"
+                            android:background="@drawable/shape_border_line"
+                            android:text="@string/txt_log_out"
+                            android:textColor="@color/colorPrimary2" /-->
+
+                        <TextView
+                            android:id="@+id/btn_save_changes"
+                            style="@style/StyleButton"
+                            android:layout_marginStart="5dp"
+                            android:text="@string/txt_save_changes"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!--com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab"
+                    style="@style/StyleFab"
+                    android:src="@drawable/ic_arrow_r8" /-->
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <ImageButton
+            android:id="@+id/back_button"
+            android:contentDescription="@string/back_button_alt"
+            android:layout_marginTop="@dimen/margin_xsmall"
+            android:layout_marginStart="@dimen/margin_xsmall"
+            android:layout_width="@dimen/round_button_small"
+            android:layout_height="@dimen/round_button_small"
+            android:layout_gravity="top"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/ic_back_black" />
+
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

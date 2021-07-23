@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="colorPrimary">#394152</color>
+    <color name="colorPrimary2">#495468</color>
+    <color name="colorPrimaryLt">#615C5585</color>
+    <color name="colorDefaultBg">#f8f9fa</color>
+
+    <color name="icActive">#FFFFFFFF</color>
+    <color name="icFocused">#DDFFFFFF</color>
+    <color name="icPressed">#AAFFFFFF</color>
+
+    <color name="icActiveBlack">#FF000000</color>
+    <color name="icFocusedBlack">#DD000000</color>
+    <color name="icPressedBlack">#AA000000</color>
+
+    <color name="colorHint">#707070</color>
+    <color name="colorTxt">#212121</color>
+
+    <color name="colorAccent">#1A84F3</color>
+    <color name="colorGrey">#F869696C</color>
+    <color name="av_custom_bg">#0e56ff</color>
+    <color name="colorTheme">#3580FF</color>
+
+    <color name="red">#FF3B00</color>
+    <color name="red_press">#990000</color>
+    <color name="blue">#003BFF</color>
+    <color name="blue_press">#000099</color>
+    <color name="green">#03DAC5</color>
+    <color name="green_press">#009900</color>
+
+    <color name="light_license_background_color">#ffffff</color>
+    <color name="light_license_text_color">#212121</color>
+    <color name="light_youtube_primary_color">#e53935</color>
+
+</resources>
