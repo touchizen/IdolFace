@@ -47,6 +47,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.database.FirebaseDatabase
@@ -556,19 +558,40 @@ abstract class MainActivity :
 //        container.postDelayed({
 //            container.systemUiVisibility = FLAGS_FULLSCREEN
 //        }, IMMERSIVE_FLAG_TIMEOUT)
-
-        val navView: NavigationView = binding.navView
-
         val preference = MPreference(baseContext)
+        var userProfile = preference.getUserProfile()
+
+        val navView = binding.navView
+        val navHeader = binding.navView.getHeaderView(0)
+        val navImageView = navHeader.findViewById<ImageView>(R.id.imageView)
+        val navUserName = navHeader.findViewById<TextView>(R.id.userName)
+        val navUserEmail = navHeader.findViewById<TextView>(R.id.userEmail)
+
         if (preference.isNotLoggedIn()) {
             navView.getMenu().findItem(ITEM_ID_MYPROFILE).setVisible(false);
             navView.getMenu().findItem(ITEM_ID_SIGNIN).setVisible(true);
             navView.getMenu().findItem(ITEM_ID_SIGNOUT).setVisible(false);
+            navUserName.text = String.format(
+                "%s v%s(%d)",
+                getString(R.string.app_name),
+                BuildConfig.VERSION_NAME,
+                BuildConfig.VERSION_CODE
+            )
+            navUserEmail.text = ""
+            navImageView.setImageResource(R.mipmap.ic_launcher_round)
         }
         else {
             navView.getMenu().findItem(ITEM_ID_MYPROFILE).setVisible(true);
             navView.getMenu().findItem(ITEM_ID_SIGNIN).setVisible(false);
             navView.getMenu().findItem(ITEM_ID_SIGNOUT).setVisible(true);
+            navUserName.text = userProfile?.userName
+            navUserEmail.text = userProfile?.mobile?.number
+            // Displayed and saved to cache image, as needs for post detail.
+            Glide.with(this)
+                .load(userProfile?.image)
+                .placeholder(R.mipmap.ic_launcher_round)
+                .apply(RequestOptions.circleCropTransform())
+                .into(navImageView)
         }
     }
 
