@@ -32,6 +32,23 @@ android {
     buildTypes {
         debug {
             debuggable true
+
+            def workingBranch = getGitWorkingBranch()
+            def normalizedWorkingBranch = workingBranch.replaceAll("[^A-Za-z]+", "").toLowerCase()
+            if (normalizedWorkingBranch.isEmpty() ||
+                    workingBranch == "master" ||
+                    workingBranch == "dev" ||
+                    workingBranch == "main"
+            ) {
+                // default values when branch name could not be determined or is master or dev
+                applicationIdSuffix ".debug"
+                //resValue "string", "app_name", "IdolFace Debug"
+            } else {
+                //applicationIdSuffix ".debug." + normalizedWorkingBranch
+                //resValue "string", "app_name", "IdolFace " + workingBranch
+                archivesBaseName = 'DeepShadowing_' + normalizedWorkingBranch
+            }
+
         }
         release {
             minifyEnabled true
@@ -192,4 +209,20 @@ dependencies {
 
 kapt {
     correctErrorTypes true
+}
+
+static String getGitWorkingBranch() {
+    try {
+        def gitProcess = "git rev-parse --abbrev-ref HEAD".execute()
+        gitProcess.waitFor()
+        if (gitProcess.exitValue() == 0) {
+            return gitProcess.text.trim()
+        } else {
+            // not a git repository
+            return ""
+        }
+    } catch (IOException ignored) {
+        // git was not found
+        return ""
+    }
 }

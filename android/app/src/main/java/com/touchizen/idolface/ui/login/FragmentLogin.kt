@@ -144,7 +144,7 @@ class FragmentLogin : Fragment() {
                     viewModel.setVCodeNull()
                     viewModel.setEmptyText()
                     if (findNavController().isValidDestination(R.id.fragment_login))
-                    findNavController().navigate(R.id.action_FLogIn_to_FVerify)
+                        findNavController().navigate(R.id.action_FLogIn_to_FVerify)
                 }
             })
 
