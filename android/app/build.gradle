@@ -13,15 +13,6 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
-    signingConfigs {
-        release {
-            storeFile file('C:\\Users\\tuxxon\\keystores\\deepshadowing_touchizen.jks')
-            storePassword 'abc123456'
-            keyAlias = 'deepshadowing'
-            keyPassword 'abc123456'
-        }
-    }
-
     defaultConfig {
         applicationId "com.touchizen.idolface"
         minSdkVersion 21
@@ -45,7 +36,7 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
-            signingConfig signingConfigs.release
+            //signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
