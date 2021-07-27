@@ -62,6 +62,7 @@ import com.touchizen.idolface.utils.NavigationHelper
 import com.touchizen.idolface.utils.isValidDestination
 import java.io.File
 import java.lang.String
+import javax.inject.Inject
 
 
 const val KEY_EVENT_ACTION = "key_event_action"
@@ -115,6 +116,8 @@ abstract class MainActivity :
     private var genderSpinner: Spinner? = null
     private var gender: Classifier.Gender = Classifier.Gender.TOTAL
 
+    @Inject
+    lateinit var preference: MPreference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -519,6 +522,8 @@ abstract class MainActivity :
         device = Classifier.Device.valueOf(deviceSpinner?.selectedItem.toString())
         numThreads = threadsTextView?.getText().toString().trim { it <= ' ' }.toInt()
 
+        //val preference = MPreference(baseContext)
+        genderSpinner?.setSelection(preference.getGender())
         gender = Classifier.Gender.findBy(genderSpinner?.selectedItemId as Int)
     }
 
@@ -558,7 +563,7 @@ abstract class MainActivity :
 //        container.postDelayed({
 //            container.systemUiVisibility = FLAGS_FULLSCREEN
 //        }, IMMERSIVE_FLAG_TIMEOUT)
-        val preference = MPreference(baseContext)
+//        val preference = MPreference(baseContext)
         var userProfile = preference.getUserProfile()
 
         val navView = binding.navView
@@ -701,6 +706,8 @@ abstract class MainActivity :
     private fun setGender(gender: Classifier.Gender) {
         if (this.gender !== gender) {
             this.gender = gender
+
+            preference.setGender(gender.id)
 
             onInferenceConfigurationChanged()
         }

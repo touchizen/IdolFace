@@ -25,6 +25,8 @@ class MPreference @Inject constructor(@ApplicationContext private val context: C
 
     private val TOKEN="token"
 
+    private val GENDER="gender"
+
     private val DIRECT_LOGIN="direct_login"
 
     private val CAMERA_FACING="camera_facing"
@@ -101,6 +103,10 @@ class MPreference @Inject constructor(@ApplicationContext private val context: C
         storeLong(LOGIN_TIME,System.currentTimeMillis())
     }
 
+    fun getLogInTime()=
+        sharedPreferences.getLong(LOGIN_TIME, 0)
+
+
     fun setCameraFacing(lensFacing: Int) {
         storeInt(CAMERA_FACING, lensFacing)
     }
@@ -108,8 +114,12 @@ class MPreference @Inject constructor(@ApplicationContext private val context: C
     fun getCameraFacing() =
         sharedPreferences.getInt(CAMERA_FACING, CameraSelector.LENS_FACING_BACK)
 
-    fun getLogInTime()=
-        sharedPreferences.getLong(LOGIN_TIME, 0)
+    fun setGender(selected: Int) {
+        storeInt(GENDER, selected)
+    }
+
+    fun getGender() =
+        sharedPreferences.getInt(GENDER, 0)
 
     fun setCurrentUser(id: String){
         storeString(ONLINE_USER, id)
