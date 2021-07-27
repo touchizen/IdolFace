@@ -69,6 +69,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
+import javax.inject.Inject
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -94,6 +95,9 @@ class CameraFragment :
     private lateinit var viewFinder: PreviewView
     private lateinit var outputDirectory: File
     private lateinit var broadcastManager: LocalBroadcastManager
+
+    @Inject
+    lateinit var preference: MPreference
 
     private var displayId: Int = -1
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
@@ -599,6 +603,7 @@ class CameraFragment :
                 } else {
                     CameraSelector.LENS_FACING_FRONT
                 }
+                preference.setCameraFacing(lensFacing)
                 // Re-bind use cases to update selected camera
                 bindCameraUseCases()
             }
@@ -612,8 +617,6 @@ class CameraFragment :
                     .navigate(CameraFragmentDirections.actionCameraToGallery(outputDirectory.absolutePath))
             }
         }
-
-        //controls.findViewById<>()
     }
 
     /** Enabled or disabled a button to switch cameras depending on the available cameras */
@@ -621,6 +624,10 @@ class CameraFragment :
         val switchCamerasButton = container.findViewById<ImageButton>(R.id.camera_switch_button)
         try {
             switchCamerasButton.isEnabled = hasBackCamera() && hasFrontCamera()
+            if (switchCamerasButton.isEnabled) {
+                lensFacing = preference.getCameraFacing()
+            }
+
         } catch (exception: CameraInfoUnavailableException) {
             switchCamerasButton.isEnabled = false
         }

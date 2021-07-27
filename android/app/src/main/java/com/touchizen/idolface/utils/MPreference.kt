@@ -2,6 +2,7 @@ package com.touchizen.idolface.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.camera.core.CameraSelector
 import com.google.gson.Gson
 import com.touchizen.idolface.model.ModelMobile
 import com.touchizen.idolface.model.UserProfile
@@ -25,6 +26,8 @@ class MPreference @Inject constructor(@ApplicationContext private val context: C
     private val TOKEN="token"
 
     private val DIRECT_LOGIN="direct_login"
+
+    private val CAMERA_FACING="camera_facing"
 
     private val ONLINE_USER="online_user"
 
@@ -51,6 +54,13 @@ class MPreference @Inject constructor(@ApplicationContext private val context: C
     private fun storeLong(key: String, value: Long) {
         editor.run {
             putLong(key, value)
+            apply()
+        }
+    }
+
+    private fun storeInt(key: String, value: Int) {
+        editor.run {
+            putInt(key, value)
             apply()
         }
     }
@@ -84,11 +94,19 @@ class MPreference @Inject constructor(@ApplicationContext private val context: C
     fun isDirectLogin() = isBoolean(DIRECT_LOGIN)
 
     fun setLastDevice(same: Boolean){
-        storeBoolean(LAST_LOGGED_DEVICE_SAME, same)}
+        storeBoolean(LAST_LOGGED_DEVICE_SAME, same)
+    }
 
     fun setLogInTime(){
         storeLong(LOGIN_TIME,System.currentTimeMillis())
     }
+
+    fun setCameraFacing(lensFacing: Int) {
+        storeInt(CAMERA_FACING, lensFacing)
+    }
+
+    fun getCameraFacing() =
+        sharedPreferences.getInt(CAMERA_FACING, CameraSelector.LENS_FACING_BACK)
 
     fun getLogInTime()=
         sharedPreferences.getLong(LOGIN_TIME, 0)
