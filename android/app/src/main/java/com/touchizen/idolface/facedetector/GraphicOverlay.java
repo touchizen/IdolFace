@@ -194,6 +194,22 @@ public class GraphicOverlay extends View {
     return imageHeight;
   }
 
+  public float getScaleFactor() {
+    return scaleFactor;
+  }
+
+  public boolean isImageFlipped() {
+    return isImageFlipped;
+  }
+
+  public float getPostScaleWidthOffset() {
+    return postScaleWidthOffset;
+  }
+
+  public float getPostScaleHeightOffset() {
+    return postScaleHeightOffset;
+  }
+
   private void updateTransformationIfNeeded() {
     if (!needUpdateTransformation || imageWidth <= 0 || imageHeight <= 0) {
       return;

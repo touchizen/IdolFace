@@ -85,7 +85,6 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
   // To keep the images and metadata in process.
   @GuardedBy("this") private var processingImage: ByteBuffer? = null
   @GuardedBy("this") private var processingMetaData: FrameMetadata? = null
-  private var originalCameraImage: Bitmap? = null // Added by Gordon Ahn.
 
   init {
     fpsTimer.scheduleAtFixedRate(
@@ -103,8 +102,6 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
   // -----------------Code for processing single still image----------------------------------------
   override fun processBitmap(bitmap: Bitmap?, graphicOverlay: GraphicOverlay) {
     val frameStartMs = SystemClock.elapsedRealtime()
-
-    this.originalCameraImage = bitmap
 
     if (isMlImageEnabled(graphicOverlay.context)) {
       val mlImage = BitmapMlImageBuilder(bitmap!!).build()
@@ -336,7 +333,7 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
           if (originalCameraImage != null) {
             graphicOverlay.add(CameraImageGraphic(graphicOverlay, originalCameraImage))
           }
-          this@VisionProcessorBase.onSuccess(results, graphicOverlay, this.originalCameraImage)
+          this@VisionProcessorBase.onSuccess(results, graphicOverlay)
           if (!PreferenceUtils.shouldHideDetectionInfo(graphicOverlay.context)) {
             graphicOverlay.add(
               InferenceInfoGraphic(
@@ -400,7 +397,7 @@ abstract class VisionProcessorBase<T>(context: Context) : VisionImageProcessor {
     )
   }
 
-  protected abstract fun onSuccess(results: T, graphicOverlay: GraphicOverlay, originalCameraImage: Bitmap?)
+  protected abstract fun onSuccess(results: T, graphicOverlay: GraphicOverlay)
 
   protected abstract fun onFailure(e: Exception)
 

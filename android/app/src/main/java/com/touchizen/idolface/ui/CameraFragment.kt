@@ -32,6 +32,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
+import android.preference.PreferenceManager
 import android.util.Log
 import android.view.*
 import android.webkit.MimeTypeMap
@@ -109,9 +110,11 @@ class CameraFragment :
     private var imageRotationDegrees: Int = 0
     private lateinit var windowManager: WindowManager
     private lateinit var bitmapBuffer: Bitmap
+    private lateinit var originalBitmap: Bitmap
 
     private var graphicOverlay: GraphicOverlay? = null
     private var imageProcessor: VisionImageProcessor? = null
+    private lateinit var faceImage: ImageView
 
     private val displayManager by lazy {
         requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
@@ -214,6 +217,8 @@ class CameraFragment :
 
     private fun setGalleryThumbnail(uri: Uri) {
         // Reference of the view that holds the gallery thumbnail
+        faceImage = container.findViewById<ImageView>(R.id.face_image)
+
         val thumbnail = container.findViewById<ImageButton>(R.id.photo_view_button)
 
         // Run the operations in the view's thread
@@ -237,7 +242,6 @@ class CameraFragment :
         container = view as ConstraintLayout
         viewFinder = container.findViewById(R.id.view_finder)
         graphicOverlay = container.findViewById(R.id.graphic_overlay)
-
 
         // Initialize our background executor
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -334,20 +338,7 @@ class CameraFragment :
         // CameraSelector
         val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
 
-        val converter = YuvToRgbConverter(requireContext())
-
-        // Setup image analysis pipeline
-//        val builder = ImageAnalysis.Builder()
-//        val ext: Camera2Interop.Extender<*> = Camera2Interop.Extender(builder)
-//        ext.setCaptureRequestOption(
-//            CaptureRequest.CONTROL_AE_MODE,
-//            CaptureRequest.CONTROL_AE_MODE_OFF
-//        )
-//        ext.setCaptureRequestOption(
-//            CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE,
-//            Range<Int>(15, 60)
-//        )
-        //val imageAnalysis = builder.build()
+//        val converter = YuvToRgbConverter(requireContext())
 
         // Preview
         preview = Preview.Builder()
@@ -383,7 +374,17 @@ class CameraFragment :
                         if (!PreferenceUtils.isCameraLiveViewportEnabled(requireContext())) {
                             val bitmap =
                                 com.touchizen.idolface.facedetector.BitmapUtils.getBitmap(image)
+
                             showFaceDetectOveray(bitmap!!, image)
+
+                            /**
+                            val faceOption = FaceOptions.Builder()
+                                .cropAlgorithm(CropAlgorithm.LEAST)
+                                .setMinimumFaceSize(6)
+//                                    .enableDebug()
+                                .build()
+                            viola.detectFace(bitmap!!, faceOption)
+                            */
                         }
 
                         image.close()
@@ -448,6 +449,7 @@ class CameraFragment :
 
     private fun showFaceDetectOveray(bitmap: Bitmap, image : ImageProxy) {
 
+        originalBitmap = bitmap
         val isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT
         val rotationDegrees = image.imageInfo.rotationDegrees
         if (rotationDegrees == 0 || rotationDegrees == 180) {
@@ -635,11 +637,20 @@ class CameraFragment :
     }
 
     private fun createImageProcessor() {
+
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val displayMode = sharedPreferences.getString(
+            requireContext().getString(R.string.pref_key_face_detection_display_mode),
+            "2"
+        )
+
+        val isFaceVisible = displayMode != "1"
+
         try {
             val faceDetectorOptions = PreferenceUtils.getFaceDetectorOptions(requireContext())
             imageProcessor = FaceDetectorProcessor(requireContext(), faceDetectorOptions)
             (imageProcessor as FaceDetectorProcessor).setOnFaceDetectListener(this)
-            (imageProcessor as FaceDetectorProcessor).setFaceVisible(false)
+            (imageProcessor as FaceDetectorProcessor).setFaceVisible(isFaceVisible)
         } catch (e: Exception) {
             Toast.makeText(
                 requireActivity(),
@@ -650,19 +661,6 @@ class CameraFragment :
         }
     }
 
-    companion object {
-
-        private const val TAG = "CameraFragment"
-        private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
-        private const val PHOTO_EXTENSION = ".jpg"
-        private const val RATIO_4_3_VALUE = 4.0 / 3.0
-        private const val RATIO_16_9_VALUE = 16.0 / 9.0
-
-        /** Helper function used to create a timestamped file */
-        private fun createFile(baseFolder: File, format: String, extension: String) =
-            File(baseFolder, SimpleDateFormat(format, Locale.US)
-                .format(System.currentTimeMillis()) + extension)
-    }
 
     @Synchronized
     protected fun runInBackground(r: Runnable?) {
@@ -690,14 +688,9 @@ class CameraFragment :
 
     override fun onFaceAvailable(
         faces: List<Face>,
-        graphicOverlay: GraphicOverlay,
-        originalCameraImage: Bitmap?
+        graphicOverlay: GraphicOverlay
     ) {
         if (faces.size == 0) {
-            sendNoFaceMessage()
-            return
-        }
-        if (originalCameraImage == null) {
             sendNoFaceMessage()
             return
         }
@@ -708,21 +701,40 @@ class CameraFragment :
 
         (activity as MainActivity).isProcessingFrame = true
 
-        val resized = BitmapUtils.resizeBitmap(originalCameraImage,
-            GalleryFragment.RESIZED_WIDTH
-        )
-        val cropped = BitmapUtils.cropCenterBitmap(resized,
-            GalleryFragment.RESIZED_WIDTH,
-            GalleryFragment.RESIZED_HEIGHT
-        )
+        for (face in faces) {
 
-        (activity as MainActivity?)!!.processImage(
-            cropped,
-            cropped.width,
-            cropped.height,
-            0,
-            this
-        )
+            val left = face.boundingBox.left
+            val right = face.boundingBox.right
+            val top = face.boundingBox.top
+            val bottom = face.boundingBox.bottom
+
+            val width = right - left
+            val height = bottom - top
+
+            if (left < 0 || top < 0 ||
+                left + width > originalBitmap.width ||
+                top + height> originalBitmap.height) {
+                (activity as MainActivity).isProcessingFrame = false
+                return
+            }
+
+            val croppedBmp = Bitmap.createBitmap(originalBitmap,
+                left, top,
+                width, height
+            )
+
+            faceImage.setImageBitmap(croppedBmp)
+
+            (activity as MainActivity?)!!.processImage(
+                croppedBmp,
+                croppedBmp.width,
+                croppedBmp.height,
+                0,
+                this
+            )
+
+            break
+        }
     }
 
     /**
@@ -733,4 +745,19 @@ class CameraFragment :
         inferenceTimeMs: Long
     ) {
     }
+
+    companion object {
+
+        private const val TAG = "CameraFragment"
+        private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
+        private const val PHOTO_EXTENSION = ".jpg"
+        private const val RATIO_4_3_VALUE = 4.0 / 3.0
+        private const val RATIO_16_9_VALUE = 16.0 / 9.0
+
+        /** Helper function used to create a timestamped file */
+        private fun createFile(baseFolder: File, format: String, extension: String) =
+            File(baseFolder, SimpleDateFormat(format, Locale.US)
+                .format(System.currentTimeMillis()) + extension)
+    }
+
 }

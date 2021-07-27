@@ -62,11 +62,13 @@ open class PhotoFragment internal constructor() :
     private lateinit var binding: FragmentPhotoBinding
     protected lateinit var fullImage: ImageView
     protected lateinit var idolImage: CircularImageView
+    private lateinit var faceImage: CircularImageView
     protected lateinit var txtDesc: TextView
 
     private lateinit var graphicOverlay: GraphicOverlay
     private lateinit var imageProcessor: VisionImageProcessor
     private lateinit var recognitions: List<Classifier.Recognition>
+    private lateinit var originalBitmap: Bitmap
     private var inferenceTimeMs: Long = 0
 
     override fun onCreateView(
@@ -83,6 +85,7 @@ open class PhotoFragment internal constructor() :
 
         fullImage = binding.photoImage
         idolImage = binding.idolImage
+        faceImage = binding.faceImage
         txtDesc = binding.txtDesc
         graphicOverlay = binding.graphicOverlay
 
@@ -152,6 +155,10 @@ open class PhotoFragment internal constructor() :
 
     public override fun onDestroy() {
         super.onDestroy()
+
+        if (!::imageProcessor.isInitialized) {
+            createImageProcessor()
+        }
         imageProcessor.run {
             this.stop()
         }
@@ -183,6 +190,8 @@ open class PhotoFragment internal constructor() :
 
     private fun showFaceDetectOveray(bitmap: Bitmap, rotationDegrees:Int) {
 
+        originalBitmap = bitmap
+
         //val isImageFlipped = lensFacing == CameraSelector.LENS_FACING_FRONT
         if (rotationDegrees == 0 || rotationDegrees == 180) {
             graphicOverlay.setImageSourceInfo(bitmap.width, bitmap.height, false)
@@ -213,16 +222,8 @@ open class PhotoFragment internal constructor() :
         onRecognitionReceived(unknownFaces,100)
     }
 
-    override fun onFaceAvailable(
-        faces: List<Face>,
-        graphicOverlay: GraphicOverlay,
-        originalCameraImage: Bitmap?
-    ) {
+    override fun onFaceAvailable(faces: List<Face>, graphicOverlay: GraphicOverlay) {
         if (faces.size == 0) {
-            sendNoFaceMessage()
-            return
-        }
-        if (originalCameraImage == null) {
             sendNoFaceMessage()
             return
         }
@@ -233,19 +234,40 @@ open class PhotoFragment internal constructor() :
 
         (activity as MainActivity).isProcessingFrame = true
 
-        val resized = BitmapUtils.resizeBitmap(originalCameraImage, GalleryFragment.RESIZED_WIDTH)
-        val cropped = BitmapUtils.cropCenterBitmap(resized,
-            GalleryFragment.RESIZED_WIDTH,
-            GalleryFragment.RESIZED_HEIGHT
-        )
+        for (face in faces) {
 
-        (activity as MainActivity?)!!.processImage(
-            cropped,
-            cropped.width,
-            cropped.height,
-            0,
-            this
-        )
+            val left = face.boundingBox.left
+            val right = face.boundingBox.right
+            val top = face.boundingBox.top
+            val bottom = face.boundingBox.bottom
+
+            val width = right - left
+            val height = bottom - top
+
+            if (left < 0 || top < 0 ||
+                left + width > originalBitmap.width ||
+                top + height> originalBitmap.height) {
+                (activity as MainActivity).isProcessingFrame = false
+                return
+            }
+
+            val croppedBmp = Bitmap.createBitmap(originalBitmap,
+                left, top,
+                width, height
+            )
+
+            faceImage.setImageBitmap(croppedBmp)
+
+            (activity as MainActivity?)!!.processImage(
+                croppedBmp,
+                croppedBmp.width,
+                croppedBmp.height,
+                0,
+                this
+            )
+
+            break
+        }
     }
 
     private fun processImage(bitmap: Bitmap) {

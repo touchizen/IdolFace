@@ -31,8 +31,8 @@ class FaceDetectorProcessor(context: Context, detectorOptions: FaceDetectorOptio
   public interface OnFaceDetectListener {
     fun onFaceAvailable(
       faces: List<Face>,
-      graphicOverlay: GraphicOverlay,
-      originalCameraImage: Bitmap?
+      graphicOverlay: GraphicOverlay //,
+      //originalCameraImage: Bitmap?
     )
   }
 
@@ -68,18 +68,14 @@ class FaceDetectorProcessor(context: Context, detectorOptions: FaceDetectorOptio
     return detector.process(image)
   }
 
-  override fun onSuccess(
-    faces: List<Face>,
-    graphicOverlay: GraphicOverlay,
-    originalCameraImage: Bitmap?
-  ) {
+  override fun onSuccess(faces: List<Face>, graphicOverlay: GraphicOverlay) {
     if (isFaceVisible) {
       for (face in faces) {
         graphicOverlay.add(FaceGraphic(graphicOverlay, face))
         logExtrasForTesting(face)
       }
     }
-    faceDetectListener?.onFaceAvailable(faces, graphicOverlay, originalCameraImage)
+    faceDetectListener?.onFaceAvailable(faces, graphicOverlay)
   }
 
   override fun onFailure(e: Exception) {
