@@ -78,9 +78,30 @@ class FragmentProfile : Fragment() {
                     if (findNavController().isValidDestination(R.id.FProfile)) {
                         progressView?.dismiss()
                         val preference = MPreference(requireActivity().baseContext)
-                        if (preference.isDirectLogin()) {
-                            preference.setDirectLogin(false)
+                        if (preference.getFragmentAfterLogin() == NavigationHelper.CAMERA) {
                             findNavController().navigate(R.id.action_to_camera_fragment)
+                        }
+                        else if (preference.getFragmentAfterLogin() == NavigationHelper.IDOLPROFILE) {
+                            val idolProfile = preference.getIdolProfile()
+                            NavigationHelper.openIdolProfile(requireActivity(),idolProfile)
+                        }
+                        else if (preference.getFragmentAfterLogin() == NavigationHelper.IDOLGALLERY) {
+                            val idolProfile = preference.getIdolProfile()
+                            NavigationHelper.openIdolGalllery(requireActivity(),idolProfile)
+                        }
+                        else if (preference.getFragmentAfterLogin() == NavigationHelper.IDOLIMAGE) {
+                            val idolImage = preference.getIdolImage()
+                            val idolProfile = preference.getIdolProfile()
+                            NavigationHelper.openIdolImageProfile(
+                                requireActivity(), idolImage, idolProfile
+                            )
+                        }
+                        else if (preference.getFragmentAfterLogin() == NavigationHelper.MYIDOLPROFILE) {
+                            val idolImage = preference.getIdolImage()
+                            val idolProfile = preference.getIdolProfile()
+                            NavigationHelper.openMyIdolProfile(
+                                requireActivity(), idolProfile, idolImage
+                            )
                         }
                         else {
                             findNavController().navigate(R.id.action_to_idol_fragment)

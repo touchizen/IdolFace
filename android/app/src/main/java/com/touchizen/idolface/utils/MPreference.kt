@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.camera.core.CameraSelector
 import com.google.gson.Gson
+import com.touchizen.idolface.model.IdolImage
+import com.touchizen.idolface.model.IdolProfile
 import com.touchizen.idolface.model.ModelMobile
 import com.touchizen.idolface.model.UserProfile
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -27,15 +29,19 @@ class MPreference @Inject constructor(@ApplicationContext private val context: C
 
     private val GENDER="gender"
 
-    private val DIRECT_LOGIN="direct_login"
-
     private val CAMERA_FACING="camera_facing"
+
+    private val IDOL_PROFILE="idol_profile"
+
+    private val IDOL_IMAGE="idol_image"
 
     private val ONLINE_USER="online_user"
 
     private val ONLINE_GROUP="online_group"
 
     private val LOGIN_TIME="login_time"
+
+    private val FRAGMENT_AFTER_LOGIN="fragment_after_login"
 
     private val LAST_LOGGED_DEVICE_SAME="last_logged_device_same"
 
@@ -89,12 +95,6 @@ class MPreference @Inject constructor(@ApplicationContext private val context: C
         storeBoolean(LOGIN, true)
     }
 
-    fun setDirectLogin(value: Boolean) {
-        storeBoolean(DIRECT_LOGIN, value)
-    }
-
-    fun isDirectLogin() = isBoolean(DIRECT_LOGIN)
-
     fun setLastDevice(same: Boolean){
         storeBoolean(LAST_LOGGED_DEVICE_SAME, same)
     }
@@ -120,6 +120,13 @@ class MPreference @Inject constructor(@ApplicationContext private val context: C
 
     fun getGender() =
         sharedPreferences.getInt(GENDER, 0)
+
+    fun setFragmentAfterLogin(fragment: String) {
+        storeString(FRAGMENT_AFTER_LOGIN, fragment)
+    }
+
+    fun getFragmentAfterLogin() =
+        sharedPreferences.getString(FRAGMENT_AFTER_LOGIN, "")
 
     fun setCurrentUser(id: String){
         storeString(ONLINE_USER, id)
@@ -165,6 +172,28 @@ class MPreference @Inject constructor(@ApplicationContext private val context: C
 
     fun saveMobile(mobile: ModelMobile){
         storeString(MOBILE, Gson().toJson(mobile))
+    }
+
+    fun saveIdolProfile(idolProfile: IdolProfile){
+        storeString(IDOL_PROFILE, Gson().toJson(idolProfile))
+    }
+
+    fun getIdolProfile(): IdolProfile?{
+        val str=getString(IDOL_PROFILE)
+        if (str.isNullOrBlank())
+            return null
+        return Gson().fromJson(str, IdolProfile::class.java)
+    }
+
+    fun saveIdolImage(idolImage: IdolImage){
+        storeString(IDOL_IMAGE, Gson().toJson(idolImage))
+    }
+
+    fun getIdolImage(): IdolImage?{
+        val str=getString(IDOL_IMAGE)
+        if (str.isNullOrBlank())
+            return null
+        return Gson().fromJson(str, IdolImage::class.java)
     }
 
     fun updatePushToken(token: String){

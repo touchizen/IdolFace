@@ -114,14 +114,7 @@ class IdolFirestoreFragment : Fragment() {
     }
 
     fun goToProfile(idol: IdolProfile?) {
-        if (preference!!.isNotLoggedIn()) {
-            Navigation.findNavController(requireActivity(), R.id.fragment_container)
-                .navigate(R.id.action_idols_to_flogin)
-        } else {
-            val bundle = bundleOf(NavigationHelper.IDOLPROFILE to idol)
-            Navigation.findNavController(requireActivity(), R.id.fragment_container)
-                .navigate(R.id.action_to_FIdolProfile, bundle)
-        }
+        NavigationHelper.openIdolProfile(requireActivity(), idol)
     }
 
     fun initSwipe() {

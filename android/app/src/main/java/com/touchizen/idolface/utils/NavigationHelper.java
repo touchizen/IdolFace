@@ -41,7 +41,10 @@ public class NavigationHelper {
 	public static final String SLIDESHOW_FRAGMENT_TAG = "slideshow_fragment_tag";
 
 	public static final String IDOLPROFILE = "idolProfile";
+	public static final String MYIDOLPROFILE = "myidolProfile";
+	public static final String IDOLGALLERY = "idolGallery";
 	public static final String IDOLIMAGE = "idolImage";
+	public static final String CAMERA = "camera";
 
     /*//////////////////////////////////////////////////////////////////////////
     // Through FragmentManager
@@ -255,7 +258,7 @@ public class NavigationHelper {
 		MPreference preference = new MPreference(activity.getBaseContext());
 
 		if (preference.isNotLoggedIn()) {
-			preference.setDirectLogin(true);
+			preference.setFragmentAfterLogin(CAMERA);
 			Navigation.findNavController(activity, R.id.fragment_container)
 					.navigate(R.id.action_to_flogin);
 		}
@@ -266,10 +269,29 @@ public class NavigationHelper {
 		signout.show(activity.getSupportFragmentManager(),"LogoutFragment");
 	}
 
+	public static void openIdolProfile(final Activity activity, IdolProfile idol) {
+		MPreference preference = new MPreference(activity.getBaseContext());
+
+		if (preference.isNotLoggedIn()) {
+			preference.setFragmentAfterLogin(IDOLPROFILE);
+			if (idol != null)
+				preference.saveIdolProfile(idol);
+			Navigation.findNavController(activity, R.id.fragment_container)
+					.navigate(R.id.action_idols_to_flogin);
+		} else {
+			Bundle bundle = new Bundle();
+			bundle.putParcelable(NavigationHelper.IDOLPROFILE, idol);
+			Navigation.findNavController(activity, R.id.fragment_container)
+					.navigate(R.id.action_to_FIdolProfile, bundle);
+		}
+	}
+
 	public static void openIdolGalllery(final Activity activity, IdolProfile idol) {
 		MPreference preference = new MPreference(activity.getBaseContext());
 
 		if (preference.isNotLoggedIn()) {
+			preference.setFragmentAfterLogin(IDOLGALLERY);
+			preference.saveIdolProfile(idol);
 			Navigation.findNavController(activity, R.id.fragment_container)
 					.navigate(R.id.action_idols_to_flogin);
 		} else {
@@ -285,10 +307,17 @@ public class NavigationHelper {
 				.navigate(R.id.action_to_my_profile);
 	}
 
-	public static void openIdolImageProfile(final Activity activity, IdolImage idolImage, IdolProfile idolProfile) {
+	public static void openIdolImageProfile(
+			final Activity activity,
+			IdolImage idolImage,
+			IdolProfile idolProfile
+	) {
 		MPreference preference = new MPreference(activity.getBaseContext());
 
 		if (preference.isNotLoggedIn()) {
+			preference.setFragmentAfterLogin(IDOLIMAGE);
+			preference.saveIdolImage(idolImage);
+			preference.saveIdolProfile(idolProfile);
 			Navigation.findNavController(activity, R.id.fragment_container)
 					.navigate(R.id.action_idols_to_flogin);
 		} else {
@@ -309,6 +338,9 @@ public class NavigationHelper {
 		MPreference preference = new MPreference(activity.getBaseContext());
 
 		if (preference.isNotLoggedIn()) {
+			preference.setFragmentAfterLogin(MYIDOLPROFILE);
+			preference.saveIdolImage(idolImage);
+			preference.saveIdolProfile(idolProfile);
 			Navigation.findNavController(activity, R.id.fragment_container)
 					.navigate(R.id.action_idols_to_flogin);
 		} else {
