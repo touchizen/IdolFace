@@ -2,37 +2,26 @@ package com.touchizen.idolface.utils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.touchizen.idolface.ClassifierActivity;
 import com.touchizen.idolface.MainActivity;
 import com.touchizen.idolface.R;
 import com.touchizen.idolface.about.AboutActivity;
-import com.touchizen.idolface.databinding.AlertLogoutBinding;
 import com.touchizen.idolface.model.IdolImage;
 import com.touchizen.idolface.model.IdolProfile;
-import com.touchizen.idolface.model.UserStatus;
 import com.touchizen.idolface.preference.SettingsActivity;
-import com.touchizen.idolface.ui.CameraFragmentDirections;
 import com.touchizen.idolface.ui.gallery.WideGalleryFragment;
 import com.touchizen.idolface.ui.idols.IdolFirestoreFragment;
 import com.touchizen.idolface.ui.logout.LogoutFragment;
-
-import org.greenrobot.eventbus.EventBus;
 
 public class NavigationHelper {
 

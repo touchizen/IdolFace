@@ -18,7 +18,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <com.mikhaellopez.circularimageview.CircularImageView
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/face_image"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:elevation="5dp"
+        app:shapeAppearanceOverlay="@style/roundedImageView"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:contentDescription="dddd" />
+
+    <!--com.mikhaellopez.circularimageview.CircularImageView
         android:id="@+id/face_image"
         android:layout_width="@dimen/round_button_large"
         android:layout_height="@dimen/round_button_large"
@@ -32,7 +44,7 @@
         app:civ_border_width="5dp"
         app:civ_shadow="true"
         app:civ_shadow_color="#3f51b5"
-        app:civ_shadow_radius="3dp" />
+        app:civ_shadow_radius="3dp" /-->
 
     <com.mikhaellopez.circularimageview.CircularImageView
         android:id="@+id/idol_image"

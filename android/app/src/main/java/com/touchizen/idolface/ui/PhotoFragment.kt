@@ -34,6 +34,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.android.material.imageview.ShapeableImageView
 import com.google.mlkit.vision.face.Face
 import com.mikhaellopez.circularimageview.CircularImageView
 import com.touchizen.idolface.ClassifierActivity
@@ -62,7 +63,7 @@ open class PhotoFragment internal constructor() :
     private lateinit var binding: FragmentPhotoBinding
     protected lateinit var fullImage: ImageView
     protected lateinit var idolImage: CircularImageView
-    private lateinit var faceImage: CircularImageView
+    private lateinit var faceImage: ShapeableImageView
     protected lateinit var txtDesc: TextView
 
     private lateinit var graphicOverlay: GraphicOverlay
