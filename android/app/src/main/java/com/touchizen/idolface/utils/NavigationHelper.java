@@ -28,7 +28,7 @@ import com.touchizen.idolface.model.IdolProfile;
 import com.touchizen.idolface.model.UserStatus;
 import com.touchizen.idolface.preference.SettingsActivity;
 import com.touchizen.idolface.ui.CameraFragmentDirections;
-import com.touchizen.idolface.ui.WideGalleryFragment;
+import com.touchizen.idolface.ui.gallery.WideGalleryFragment;
 import com.touchizen.idolface.ui.idols.IdolFirestoreFragment;
 import com.touchizen.idolface.ui.logout.LogoutFragment;
 
@@ -90,22 +90,14 @@ public class NavigationHelper {
 		}
 	}
 
-	public static void openWideGalleryFragment(
-			final FragmentManager fragmentManager,
-			final Uri oneImageUri
-	){
+	public static void openWideGalleryFragment(final Activity activity,	final Uri oneImageUri) {
+
 		//InfoCache.getInstance().trimCache();
-		Bundle args = new Bundle();
-		WideGalleryFragment galleryFragment = new WideGalleryFragment();
-
-		args.putString("root_directory", "");
-		args.putParcelable("image_uri", oneImageUri);
-		galleryFragment.setArguments(args);
-
-		defaultTransaction(fragmentManager)
-				.replace(R.id.fragment_container, galleryFragment)
-				.addToBackStack(null)
-				.commit();
+		Bundle bundle = new Bundle();
+		bundle.putString("root_directory", "");
+		bundle.putParcelable("image_uri", oneImageUri);
+		Navigation.findNavController(activity, R.id.fragment_container)
+				.navigate(R.id.action_to_wide_gallery, bundle);
 	}
 
 	public static void openWideGalleryFragment(final FragmentManager fragmentManager) {

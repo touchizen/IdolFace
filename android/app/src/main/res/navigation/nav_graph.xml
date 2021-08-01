@@ -44,6 +44,10 @@
             app:destination="@id/gallery_fragment" />
 
         <action
+            android:id="@+id/action_to_wide_gallery"
+            app:destination="@id/wide_gallery_fragment" />
+
+        <action
             android:id="@+id/action_to_my_profile"
             app:destination="@id/myprofile_fragment" />
 
@@ -75,6 +79,23 @@
         <argument
             android:name="root_directory"
             app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/wide_gallery_fragment"
+        android:name="com.touchizen.idolface.ui.gallery.WideGalleryFragment"
+        android:label="WideGalleryFragment" >
+        <argument
+            android:name="root_directory"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_to_camera"
+            app:destination="@id/camera_fragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true"
+            />
     </fragment>
 
     <fragment

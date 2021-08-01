@@ -800,7 +800,7 @@ abstract class MainActivity :
 
             val selectedImagePath: kotlin.String? = getPathFromUri(data.data)
             NavigationHelper.openWideGalleryFragment(
-                supportFragmentManager,
+                this,
                 selectedImageUri
             )
         }

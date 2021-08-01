@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.touchizen.idolface.ui
+package com.touchizen.idolface.ui.gallery
 
 import android.content.Intent
 import android.database.Cursor
@@ -29,6 +29,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -41,7 +42,11 @@ import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener
 import com.touchizen.idolface.ClassifierActivity
 import com.touchizen.idolface.MainActivity
 import com.touchizen.idolface.R
+import com.touchizen.idolface.databinding.FragmentGalleryBinding
+import com.touchizen.idolface.databinding.FragmentIdolGalleryBinding
 import com.touchizen.idolface.tflite.Classifier
+import com.touchizen.idolface.ui.GalleryFragmentArgs
+import com.touchizen.idolface.ui.UriPhotoFragment
 import com.touchizen.idolface.utils.BitmapUtils
 import com.touchizen.idolface.utils.ShareUtils
 import com.touchizen.idolface.utils.padWithDisplayCutout
@@ -55,11 +60,11 @@ class WideGalleryFragment internal constructor() : Fragment(),
 
     /** AndroidX navigation arguments */
     private val args: GalleryFragmentArgs by navArgs()
-
+    private lateinit var binding: FragmentGalleryBinding
     private lateinit var mediaList: MutableList<Uri>
 
-    val argImageUri by lazy { requireArguments().getParcelable<Uri>(IMAGE_URI) }
-    var startPosition: Int = 0
+    private val argImageUri by lazy { requireArguments().getParcelable<Uri>(IMAGE_URI) }
+    private var startPosition: Int = 0
 
     /** Adapter class used to present a fragment containing one photo or video as a page */
     inner class MediaPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
@@ -93,7 +98,14 @@ class WideGalleryFragment internal constructor() : Fragment(),
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_gallery, container, false)
+    ): View {
+        super.onCreateView(inflater, container, savedInstanceState)
+
+        // Inflate the layout for this fragment
+        binding = FragmentGalleryBinding.inflate(layoutInflater, container, false)
+        return binding.root
+    } //= inflater.inflate(R.layout.fragment_gallery, container, false)
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -104,6 +116,7 @@ class WideGalleryFragment internal constructor() : Fragment(),
         if (mediaList.isEmpty()) {
             view.findViewById<ImageButton>(R.id.share_button).isEnabled = false
         }
+
 
         // Populate the ViewPager and implement a cache of two media items
         val mediaViewPager = view.findViewById<ViewPager>(R.id.photo_view_pager).apply {
@@ -133,7 +146,8 @@ class WideGalleryFragment internal constructor() : Fragment(),
                     .navigateUp()
             }
             else if (argImageUri != null) {
-                (activity as MainActivity?)!!.onBackPressed()
+//                (activity as MainActivity?)!!.onBackPressed()
+                onBackButton()
             }
 
         }
@@ -199,6 +213,11 @@ class WideGalleryFragment internal constructor() : Fragment(),
                     .create().showImmersive()
             }
         }
+    }
+
+    fun onBackButton() {
+        Navigation.findNavController(requireActivity(), R.id.fragment_container)
+            .navigate(R.id.action_to_camera)
     }
 
     private fun getFilePath(uri: Uri): String? {
