@@ -95,10 +95,27 @@ def train_and_evaluate(image_path):
 
 
 IMAGE_PATHS = [
-    "g:\\deeplearning\\selenium\\images\\female",
-    "g:\\deeplearning\\selenium\\images\\male",
-    "g:\\deeplearning\\selenium\\images\\total"
+    "g:\\deeplearning\\selenium\\images\\female.out",
+    "g:\\deeplearning\\selenium\\images\\male.out",
+    "g:\\deeplearning\\selenium\\images\\total.out"
     ]
 
-for onePath in IMAGE_PATHS:
-    train_and_evaluate(onePath)
+
+def run_main():
+
+    for onePath in IMAGE_PATHS:
+        train_and_evaluate(onePath)
+
+
+if __name__ == '__main__':
+
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('--eng-file', help='SRT File Path for English', default=".")
+    # parser.add_argument('--kor-file', help='SRT File Path for Korean', default=".")
+    # parser.add_argument('--out-file', help='SRT File Path for Output', default="output.srt")
+    # args = parser.parse_args()
+
+    try:
+        run_main()
+    except Exception as e:
+        print("Error: {}".format(e))                        

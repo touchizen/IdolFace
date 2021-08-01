@@ -135,9 +135,13 @@ public class NavigationHelper {
 	}
 
 	public static void openIdolFragment(final Activity activity) {
-		Navigation.findNavController(activity, R.id.fragment_container).navigate(
-					CameraFragmentDirections.actionCameraToIdols()
-		);
+//		Navigation.findNavController(activity, R.id.fragment_container).navigate(
+//					CameraFragmentDirections.actionCameraToIdols()
+//		);
+
+		Navigation.findNavController(activity, R.id.fragment_container)
+				.navigate(R.id.action_to_idol_fragment);
+
 	}
 
 	public static void gotoSlideshowFragment(final FragmentManager fragmentManager) {
@@ -248,6 +252,7 @@ public class NavigationHelper {
 					.setData(Uri.parse(MainActivity.YOUTUBE_CHANNEL)) // edit this url
 					.setPackage("com.google.android.youtube"));	// do not edit
 	}
+
 
 	public static void navigateUp(final Activity activity) {
 		Navigation.findNavController(activity, R.id.fragment_container)

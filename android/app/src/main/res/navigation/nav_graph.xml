@@ -58,8 +58,13 @@
             app:popUpToInclusive="true"/>
 
         <action
-            android:id="@+id/action_camera_to_idols"
-            app:destination="@id/idol_fragment" />
+            android:id="@+id/action_to_idol_fragment"
+            app:destination="@id/idol_fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right"
+            />
 
     </fragment>
 
@@ -111,6 +116,10 @@
         <action
             android:id="@+id/action_to_idol_fragment"
             app:destination="@id/idol_fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right"
             app:launchSingleTop="true"
             app:popUpTo="@+id/nav_graph"
             app:popUpToInclusive="true"

@@ -10,9 +10,9 @@ import numpy as np
 formats = [".jpg",".png",".jpeg"]
 
 IMAGE_PATHS = [
-    "g:\\deeplearning\\selenium\\images\\female",
-    "g:\\deeplearning\\selenium\\images\\male",
-    "g:\\deeplearning\\selenium\\images\\total"
+    "g:\\deeplearning\\selenium\\images\\female.out",
+    "g:\\deeplearning\\selenium\\images\\male.out",
+    "g:\\deeplearning\\selenium\\images\\total.out"
     ]
 
 def is_image(filename, verbose=False):
