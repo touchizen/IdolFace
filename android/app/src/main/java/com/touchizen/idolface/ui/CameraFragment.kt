@@ -221,7 +221,6 @@ class CameraFragment :
 
     private fun setGalleryThumbnail(uri: Uri) {
         // Reference of the view that holds the gallery thumbnail
-        faceImage = container.findViewById<ImageView>(R.id.face_image)
 
         val thumbnail = container.findViewById<ImageButton>(R.id.photo_view_button)
 
@@ -515,6 +514,8 @@ class CameraFragment :
                 setGalleryThumbnail(Uri.fromFile(it))
             }
         }
+
+        faceImage = controls.findViewById<ImageView>(R.id.face_image)
 
         // Listener for button used to capture photo
         controls.findViewById<ImageButton>(R.id.camera_capture_button).setOnClickListener {
