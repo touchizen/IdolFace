@@ -8,10 +8,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/deeplearning/IdolFace/android/app/src/main/res/drawable/bottom_sheet_bg.xml" value="0.3072916666666667" />
         <entry key="..\:/deeplearning/IdolFace/android/app/src/main/res/drawable/shadow_view.xml" value="0.2526041666666667" />
         <entry key="..\:/deeplearning/IdolFace/android/app/src/main/res/layout-land/camera_ui_container.xml" value="0.2001763668430335" />
+        <entry key="..\:/deeplearning/IdolFace/android/app/src/main/res/layout/activity_settings.xml" value="0.3536458333333333" />
+        <entry key="..\:/deeplearning/IdolFace/android/app/src/main/res/layout/activity_splash.xml" value="0.3536458333333333" />
+        <entry key="..\:/deeplearning/IdolFace/android/app/src/main/res/layout/fragment_about.xml" value="0.3536458333333333" />
         <entry key="..\:/deeplearning/IdolFace/android/app/src/main/res/layout/fragment_camera.xml" value="0.2365815528921313" />
         <entry key="..\:/deeplearning/IdolFace/android/app/src/main/res/layout/fragment_gallery.xml" value="0.17798913043478262" />
+        <entry key="..\:/deeplearning/IdolFace/android/app/src/main/res/layout/fragment_idol_profile.xml" value="0.3536458333333333" />
       </map>
     </option>
   </component>

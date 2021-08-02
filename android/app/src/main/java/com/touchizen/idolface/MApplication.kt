@@ -1,6 +1,7 @@
 package com.touchizen.idolface
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.lifecycle.LifecycleObserver
 import androidx.multidex.MultiDexApplication
@@ -20,6 +21,7 @@ import dagger.Provides
 //import com.gowtham.letschat.utils.MPreference
 //import com.gowtham.letschat.utils.UserUtils
 import dagger.hilt.android.HiltAndroidApp
+import org.opencv.android.OpenCVLoader
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -56,6 +58,7 @@ class MApplication : MultiDexApplication(), LifecycleObserver,Configuration.Prov
 //        messageDaoo=messageDao
         FirebaseApp.initializeApp(this)
         initTimber()
+        //initOpenCV()
         if (preference.isLoggedIn())
             checkLastDevice()   //looking for does user is logged in another device.if yes,need to shoe dialog for log in again
     }
@@ -65,6 +68,13 @@ class MApplication : MultiDexApplication(), LifecycleObserver,Configuration.Prov
         Configuration.Builder()
             .setWorkerFactory(workerFactory)
             .build()
+
+    private fun initOpenCV() {
+        if (!OpenCVLoader.initDebug())
+            Log.e("OpenCv", "Unable to load OpenCV");
+        else
+            Log.d("OpenCv", "OpenCV loaded");
+    }
 
     private fun initTimber() {
         if (BuildConfig.DEBUG) {

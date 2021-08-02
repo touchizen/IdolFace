@@ -95,9 +95,9 @@ def train_and_evaluate(image_path):
 
 
 IMAGE_PATHS = [
-    "g:\\deeplearning\\selenium\\images\\female.out",
-    "g:\\deeplearning\\selenium\\images\\male.out",
-    "g:\\deeplearning\\selenium\\images\\total.out"
+#    "g:\\deeplearning\\selenium\\images\\female.out",
+#    "g:\\deeplearning\\selenium\\images\\male.out",
+    "g:\\deeplearning\\selenium\\images\\total"
     ]
 
 

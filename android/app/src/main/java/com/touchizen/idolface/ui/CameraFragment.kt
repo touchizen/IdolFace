@@ -737,7 +737,7 @@ class CameraFragment :
                 croppedBmp.width,
                 croppedBmp.height,
                 0,
-                this
+                null
             )
 
             break

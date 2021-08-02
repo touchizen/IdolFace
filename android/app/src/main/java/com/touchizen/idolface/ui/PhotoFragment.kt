@@ -36,7 +36,6 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.mlkit.vision.face.Face
-import com.mikhaellopez.circularimageview.CircularImageView
 import com.touchizen.idolface.ClassifierActivity
 import com.touchizen.idolface.MainActivity
 import com.touchizen.idolface.R
@@ -46,7 +45,6 @@ import com.touchizen.idolface.facedetector.GraphicOverlay
 import com.touchizen.idolface.facedetector.PreferenceUtils
 import com.touchizen.idolface.facedetector.VisionImageProcessor
 import com.touchizen.idolface.tflite.Classifier
-import com.touchizen.idolface.utils.BitmapUtils
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.IOException
@@ -62,15 +60,15 @@ open class PhotoFragment internal constructor() :
     ,FaceDetectorProcessor.OnFaceDetectListener, ClassifierActivity.OnClassifierListener {
     private lateinit var binding: FragmentPhotoBinding
     protected lateinit var fullImage: ImageView
-    protected lateinit var idolImage: CircularImageView
     private lateinit var faceImage: ShapeableImageView
     protected lateinit var txtDesc: TextView
 
     private lateinit var graphicOverlay: GraphicOverlay
     private lateinit var imageProcessor: VisionImageProcessor
-    private lateinit var recognitions: List<Classifier.Recognition>
     private lateinit var originalBitmap: Bitmap
-    private var inferenceTimeMs: Long = 0
+    public lateinit var recognitions: List<Classifier.Recognition>
+    public var inferenceTimeMs: Long = 0
+    public var fragmentId: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -85,7 +83,6 @@ open class PhotoFragment internal constructor() :
         super.onViewCreated(view, savedInstanceState)
 
         fullImage = binding.photoImage
-        idolImage = binding.idolImage
         faceImage = binding.faceImage
         txtDesc = binding.txtDesc
         graphicOverlay = binding.graphicOverlay
@@ -98,6 +95,9 @@ open class PhotoFragment internal constructor() :
     open fun onImageLoadFromArguments() {
         val args = arguments ?: return
         val resource = args.getString(FILE_NAME_KEY)?.let { File(it) } ?: R.drawable.ic_photo
+
+        fragmentId = args.getInt(FRAGMENT_ID)
+
         Glide.with(this)
             .load(resource)
             .listener(this)
@@ -286,6 +286,10 @@ open class PhotoFragment internal constructor() :
         this.recognitions = results
         this.inferenceTimeMs = inferenceTimeMs
 
+        (parentFragment as GalleryFragment).mapResults.put(fragmentId, results)
+        (parentFragment as GalleryFragment).mapTimes.put(fragmentId, inferenceTimeMs)
+        (parentFragment as GalleryFragment).isFragmentCreated.value = true
+
         txtDesc.text = "[" + resources.getText(R.string.app_name).toString() + "] " +
                 results[0].title +
                 " --- " +
@@ -294,11 +298,13 @@ open class PhotoFragment internal constructor() :
 
     companion object {
         private const val FILE_NAME_KEY = "file_name"
+        private const val FRAGMENT_ID = "fragmentId"
         private const val TAG = "PhotoFragment"
         const val RESIZED_WIDTH = 640
         const val RESIZED_HEIGHT = 480
-        fun create(image: File) = PhotoFragment().apply {
+        fun create(image: File, position: Int) = PhotoFragment().apply {
             arguments = Bundle().apply {
+                putInt(FRAGMENT_ID, position)
                 putString(FILE_NAME_KEY, image.absolutePath)
             }
         }

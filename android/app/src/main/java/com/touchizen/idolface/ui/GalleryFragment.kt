@@ -43,6 +43,8 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager.widget.ViewPager
@@ -57,14 +59,13 @@ import com.touchizen.idolface.facedetector.GraphicOverlay
 import com.touchizen.idolface.facedetector.PreferenceUtils
 import com.touchizen.idolface.facedetector.VisionImageProcessor
 import com.touchizen.idolface.tflite.Classifier
-import com.touchizen.idolface.utils.BitmapUtils
-import com.touchizen.idolface.utils.ShareUtils
-import com.touchizen.idolface.utils.padWithDisplayCutout
-import com.touchizen.idolface.utils.showImmersive
+import com.touchizen.idolface.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.IOException
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 val EXTENSION_WHITELIST = arrayOf("JPG")
 
@@ -75,13 +76,17 @@ class GalleryFragment internal constructor() : Fragment() {
 
     /** AndroidX navigation arguments */
     private val args: GalleryFragmentArgs by navArgs()
+    public lateinit var mediaList: MutableList<File>
+    public lateinit var mediaViewPager: ViewPager
 
-    private lateinit var mediaList: MutableList<File>
+    public val isFragmentCreated = MutableLiveData(false)
+    public val mapResults: HashMap<Int, List<Classifier.Recognition>> = HashMap()
+    public val mapTimes: HashMap<Int, Long> = HashMap()
 
     /** Adapter class used to present a fragment containing one photo or video as a page */
     inner class MediaPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         override fun getCount(): Int = mediaList.size
-        override fun getItem(position: Int): Fragment = PhotoFragment.create(mediaList[position])
+        override fun getItem(position: Int): Fragment = PhotoFragment.create(mediaList[position], position)
         override fun getItemPosition(obj: Any): Int = POSITION_NONE
     }
 
@@ -90,7 +95,6 @@ class GalleryFragment internal constructor() : Fragment() {
 
         // Mark this as a retain fragment, so the lifecycle does not get restarted on config change
         retainInstance = true
-
 
         // Get root directory of media from navigation arguments
         val rootDirectory = File(args.rootDirectory)
@@ -118,17 +122,19 @@ class GalleryFragment internal constructor() : Fragment() {
             view.findViewById<ImageButton>(R.id.delete_button).isEnabled = false
             view.findViewById<ImageButton>(R.id.share_button).isEnabled = false
         }
-
         // Populate the ViewPager and implement a cache of two media items
-        val mediaViewPager = view.findViewById<ViewPager>(R.id.photo_view_pager).apply {
+        mediaViewPager = view.findViewById<ViewPager>(R.id.photo_view_pager).apply {
             offscreenPageLimit = 2
             adapter = MediaPagerAdapter(childFragmentManager)
         }
 
-//        mediaViewPager.setOnPageChangeListener(object : SimpleOnPageChangeListener() {
-//            override fun onPageSelected(position: Int) {
-//            }
-//        })
+        mediaViewPager.addOnPageChangeListener(object : SimpleOnPageChangeListener() {
+            override fun onPageSelected(position: Int) {
+                sendResultsToBottomSheet(position)
+            }
+        })
+
+
 
         // Make sure that the cutout "safe area" avoids the screen notch if any
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -150,29 +156,7 @@ class GalleryFragment internal constructor() : Fragment() {
         view.findViewById<ImageButton>(R.id.share_button).setOnClickListener {
 
             mediaList.getOrNull(mediaViewPager.currentItem)?.let { mediaFile ->
-
                 ShareUtils.shareScreenshot(requireActivity() as AppCompatActivity,this)
-                // Create a sharing intent
-//                val intent = Intent().apply {
-//                    // Infer media type from file extension
-//                    val mediaType = MimeTypeMap.getSingleton()
-//                            .getMimeTypeFromExtension(mediaFile.extension)
-//                    // Get URI from our FileProvider implementation
-//                    val uri = FileProvider.getUriForFile(
-//                        view.context,
-//                        BuildConfig.APPLICATION_ID + ".provider",
-//                        mediaFile
-//                    )
-//
-//                    // Set the appropriate intent extra, type, action and flags
-//                    putExtra(Intent.EXTRA_STREAM, uri)
-//                    type = mediaType
-//                    action = Intent.ACTION_SEND
-//                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-//                }
-//
-//                // Launch the intent letting the user choose which app to share with
-//                startActivity(Intent.createChooser(intent, getString(R.string.share_hint)))
             }
         }
 
@@ -208,6 +192,29 @@ class GalleryFragment internal constructor() : Fragment() {
                         .setNegativeButton(android.R.string.no, null)
                         .create().showImmersive()
             }
+        }
+
+        isFragmentCreated.observe(viewLifecycleOwner, { isCreated ->
+            if (isCreated) {
+                sendResultsToBottomSheet(mediaViewPager.currentItem)
+            }
+        })
+    }
+
+    fun sendResultsToBottomSheet(position:Int) {
+        if (mapResults.get(position) != null) {
+            (requireActivity() as MainActivity).showResultsInBottomSheet(
+                mapResults.get(position)
+            )
+        }
+        else {
+
+        }
+
+        if (mapTimes.get(position) != null) {
+            (requireActivity() as MainActivity).showInference(
+                mapTimes.get(position).toString() + "ms"
+            )
         }
     }
 

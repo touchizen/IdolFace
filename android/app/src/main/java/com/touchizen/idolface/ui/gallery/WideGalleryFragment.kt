@@ -35,6 +35,7 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager.widget.ViewPager
@@ -55,13 +56,17 @@ import java.io.File
 
 
 /** Fragment used to present the user with a gallery of photos taken */
-class WideGalleryFragment internal constructor() : Fragment(),
-    ClassifierActivity.OnClassifierListener {
+class WideGalleryFragment internal constructor() : Fragment() {
 
     /** AndroidX navigation arguments */
     private val args: GalleryFragmentArgs by navArgs()
     private lateinit var binding: FragmentGalleryBinding
-    private lateinit var mediaList: MutableList<Uri>
+    public lateinit var mediaList: MutableList<Uri>
+    public lateinit var mediaViewPager: ViewPager
+
+    public val isFragmentCreated = MutableLiveData(false)
+    public val mapResults: HashMap<Int, List<Classifier.Recognition>> = HashMap()
+    public val mapTimes: HashMap<Int, Long> = HashMap()
 
     private val argImageUri by lazy { requireArguments().getParcelable<Uri>(IMAGE_URI) }
     private var startPosition: Int = 0
@@ -69,7 +74,7 @@ class WideGalleryFragment internal constructor() : Fragment(),
     /** Adapter class used to present a fragment containing one photo or video as a page */
     inner class MediaPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         override fun getCount(): Int = mediaList.size
-        override fun getItem(position: Int): Fragment = UriPhotoFragment.create(mediaList[position])
+        override fun getItem(position: Int): Fragment = UriPhotoFragment.create(mediaList[position], position)
         override fun getItemPosition(obj: Any): Int = POSITION_NONE
     }
 
@@ -119,17 +124,17 @@ class WideGalleryFragment internal constructor() : Fragment(),
 
 
         // Populate the ViewPager and implement a cache of two media items
-        val mediaViewPager = view.findViewById<ViewPager>(R.id.photo_view_pager).apply {
+        mediaViewPager = view.findViewById<ViewPager>(R.id.photo_view_pager).apply {
             offscreenPageLimit = 2
             adapter = MediaPagerAdapter(childFragmentManager)
             currentItem = startPosition
         }
 
-//        mediaViewPager.setOnPageChangeListener(object : SimpleOnPageChangeListener() {
-//            override fun onPageSelected(position: Int) {
-//                //processImage(mediaList[position])
-//            }
-//        })
+        mediaViewPager.addOnPageChangeListener(object : SimpleOnPageChangeListener() {
+            override fun onPageSelected(position: Int) {
+                sendResultsToBottomSheet(position)
+            }
+        })
 
         // Make sure that the cutout "safe area" avoids the screen notch if any
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -161,21 +166,6 @@ class WideGalleryFragment internal constructor() : Fragment(),
                     requireActivity() as AppCompatActivity,
                     this
                 )
-                // Create a sharing intent
-//                val intent = Intent().apply {
-//                    // Infer media type from file extension
-//                    val cr = requireContext().contentResolver
-//                    val mediaType = cr.getType(mediaFile)
-//
-//                    // Set the appropriate intent extra, type, action and flags
-//                    putExtra(Intent.EXTRA_STREAM, mediaFile)
-//                    type = mediaType
-//                    action = Intent.ACTION_SEND
-//                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-//                }
-//
-//                // Launch the intent letting the user choose which app to share with
-//                startActivity(Intent.createChooser(intent, getString(R.string.share_hint)))
             }
         }
 
@@ -213,6 +203,12 @@ class WideGalleryFragment internal constructor() : Fragment(),
                     .create().showImmersive()
             }
         }
+
+        isFragmentCreated.observe(viewLifecycleOwner, { isCreated ->
+            if (isCreated) {
+                sendResultsToBottomSheet(mediaViewPager.currentItem)
+            }
+        })
     }
 
     fun onBackButton() {
@@ -235,20 +231,28 @@ class WideGalleryFragment internal constructor() : Fragment(),
         return null
     }
 
+    fun sendResultsToBottomSheet(position:Int) {
+        if (mapResults.get(position) != null) {
+            (requireActivity() as MainActivity).showResultsInBottomSheet(
+                mapResults.get(position)
+            )
+        }
+        else {
+
+        }
+
+        if (mapTimes.get(position) != null) {
+            (requireActivity() as MainActivity).showInference(
+                mapTimes.get(position).toString() + "ms"
+            )
+        }
+    }
+
     companion object {
 
         const val RESIZED_WIDTH = 640
         const val RESIZED_HEIGHT = 480
         const val IMAGE_URI = "image_uri"
 
-    }
-
-    /**
-     * Events for Classifier
-     */
-    override fun onRecognitionReceived(
-        results: List<Classifier.Recognition>,
-        inferenceTimeMs: Long
-    ) {
     }
 }

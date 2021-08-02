@@ -5,10 +5,8 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.SystemClock
 import android.util.Size
-import com.google.mlkit.vision.face.Face
 import com.touchizen.idolface.env.BorderedText
 import com.touchizen.idolface.env.Logger
-import com.touchizen.idolface.facedetector.GraphicOverlay
 import com.touchizen.idolface.tflite.Classifier
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.IOException
@@ -65,11 +63,11 @@ class ClassifierActivity : MainActivity() {
     }
 
     override fun processImage(
-        rgbFrameBitmap : Bitmap,
+        rgbFrameBitmap: Bitmap,
         previewWidth: Int,
         previewHeight: Int,
         rotation: Int,
-        listener: OnClassifierListener
+        listener: OnClassifierListener?
     ) {
 
         this.rgbFrameBitmap = rgbFrameBitmap
@@ -106,13 +104,17 @@ class ClassifierActivity : MainActivity() {
                 lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime
                 LOGGER.v("Detect: %s", results)
                 runOnUiThread {
-                    listener.onRecognitionReceived(results,lastProcessingTimeMs)
-                    showResultsInBottomSheet(results)
-                    showFrameInfo(previewWidth.toString() + "x" + previewHeight)
-                    showCropInfo(imageSizeX.toString() + "x" + imageSizeY)
-                    showCameraResolution(cropSize.toString() + "x" + cropSize)
-                    showRotationInfo(sensorOrientation.toString())
-                    showInference(lastProcessingTimeMs.toString() + "ms")
+                    if (listener != null) {
+                        listener.onRecognitionReceived(results, lastProcessingTimeMs)
+                    }
+                    else {
+                        showResultsInBottomSheet(results)
+                        showFrameInfo(previewWidth.toString() + "x" + previewHeight)
+                        showCropInfo(imageSizeX.toString() + "x" + imageSizeY)
+                        showCameraResolution(cropSize.toString() + "x" + cropSize)
+                        showRotationInfo(sensorOrientation.toString())
+                        showInference(lastProcessingTimeMs.toString() + "ms")
+                    }
                 }
             }
             readyForNextImage()

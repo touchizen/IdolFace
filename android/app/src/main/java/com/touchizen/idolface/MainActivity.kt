@@ -45,7 +45,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -53,9 +52,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.database.FirebaseDatabase
 import com.touchizen.idolface.databinding.ActivityMainBinding
-import com.touchizen.idolface.model.UserStatus
 import com.touchizen.idolface.tflite.Classifier
-import com.touchizen.idolface.ui.logout.LogoutFragment
 import com.touchizen.idolface.utils.ForceUpdateAsync
 import com.touchizen.idolface.utils.MPreference
 import com.touchizen.idolface.utils.NavigationHelper
@@ -613,11 +610,11 @@ abstract class MainActivity :
     }
 
     abstract fun processImage(
-        rgbFrameBitmap : Bitmap,
+        rgbFrameBitmap: Bitmap,
         previewWidth: Int,
         previewHeight: Int,
         rotation: Int,
-        listener: ClassifierActivity.OnClassifierListener
+        listener: ClassifierActivity.OnClassifierListener?
     )
     protected abstract fun onInferenceConfigurationChanged()
 
