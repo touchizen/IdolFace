@@ -16,8 +16,10 @@
 
 package com.touchizen.idolface.ui
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
@@ -41,6 +43,7 @@ import com.google.android.gms.tasks.Task
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
+import com.theartofdev.edmodo.cropper.CropImage
 import com.touchizen.idolface.ClassifierActivity
 import com.touchizen.idolface.MainActivity
 import com.touchizen.idolface.R
@@ -120,6 +123,8 @@ open class PhotoFragment internal constructor() :
         //swapingProgressBar = binding.swapingProgressBar
 
         fullImage.scaleType = ImageView.ScaleType.CENTER
+
+        faceImage.setOnClickListener{ ImageUtils.askPermission(this) }
 
         onImageLoadFromArguments()
 
@@ -446,7 +451,6 @@ open class PhotoFragment internal constructor() :
 
     public fun onSwap() {
 
-
         if (!::bitmapFull.isInitialized) {
             bitmapFull = originalBitmap
         }
@@ -515,6 +519,29 @@ open class PhotoFragment internal constructor() :
 
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
+            onCropResult(data)
+        else
+            ImageUtils.cropImage(requireActivity(), data, true)
+    }
+
+    private fun onCropResult(data: Intent?) {
+        try {
+            val imagePath: Uri? = ImageUtils.getCroppedImage(data)
+
+            faceIndex = FACE_FACEIMAGE
+            Glide.with(this)
+                .load(imagePath)
+                .listener(this)
+                .into(faceImage)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     companion object {
         private const val FILE_NAME_KEY = "file_name"
         private const val FRAGMENT_ID = "fragmentId"
@@ -534,7 +561,7 @@ open class PhotoFragment internal constructor() :
             R.raw.idol26, R.raw.idol27, R.raw.idol28, R.raw.idol29, R.raw.idol30,
             R.raw.idol31, R.raw.idol32, R.raw.idol33, R.raw.idol34, R.raw.idol35,
             R.raw.idol36, R.raw.idol37
-            )
+        )
 
         fun create(image: File, position: Int) = PhotoFragment().apply {
             arguments = Bundle().apply {

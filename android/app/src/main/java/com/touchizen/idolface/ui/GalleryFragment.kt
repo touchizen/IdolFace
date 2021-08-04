@@ -50,6 +50,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener
 import com.google.mlkit.vision.face.Face
+import com.theartofdev.edmodo.cropper.CropImage
 import com.touchizen.idolface.BuildConfig
 import com.touchizen.idolface.MainActivity
 import com.touchizen.idolface.R
@@ -207,6 +208,15 @@ class GalleryFragment internal constructor() : Fragment() {
         })
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        val childFragments = childFragmentManager.fragments
+        childFragments.forEach { fragment ->
+            fragment.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
     fun sendResultsToBottomSheet(position:Int) {
         if (mapResults.get(position) != null) {
             (requireActivity() as MainActivity).showResultsInBottomSheet(
@@ -222,6 +232,10 @@ class GalleryFragment internal constructor() : Fragment() {
                 mapTimes.get(position).toString() + "ms"
             )
         }
+    }
+
+    fun openIdols() {
+        NavigationHelper.openIdolFragment(requireActivity())
     }
 
     companion object {

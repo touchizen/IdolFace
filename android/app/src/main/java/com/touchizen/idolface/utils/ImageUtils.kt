@@ -92,7 +92,8 @@ object ImageUtils {
         context: Activity,
         action: String,
         fileName: String,
-        reqCode: Int) {
+        reqCode: Int
+    ) {
         try {
             val intent = Intent(action)
             if (intent.resolveActivity(context.packageManager) != null) {
