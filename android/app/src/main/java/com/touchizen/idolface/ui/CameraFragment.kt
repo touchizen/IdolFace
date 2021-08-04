@@ -682,8 +682,8 @@ class CameraFragment :
         val unknownFaces : ArrayList<Classifier.Recognition> = ArrayList<Classifier.Recognition>();
 
         unknownFaces.add(Classifier.Recognition("0",getString(R.string.no_face),1.0f,null) )
-        unknownFaces.add(Classifier.Recognition("1",getString(R.string.no_face),1.0f,null) )
-        unknownFaces.add(Classifier.Recognition("2",getString(R.string.no_face),1.0f,null) )
+        unknownFaces.add(Classifier.Recognition("0",getString(R.string.no_face),1.0f,null) )
+        unknownFaces.add(Classifier.Recognition("0",getString(R.string.no_face),1.0f,null) )
 
         //unknownFaces.ap
         runInBackground {
