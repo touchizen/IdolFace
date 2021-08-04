@@ -6,6 +6,8 @@
     <string name="gallery_button_alt">Gallery</string>
     <string name="back_button_alt">Back</string>
     <string name="share_button_alt">Share</string>
+    <string name="swap_button_alt">FaceSwap</string>
+
     <string name="share_hint">Share using</string>
     <string name="capture_mode_camera">Camera</string>
     <string name="capture_mode_hdr">HDR</string>

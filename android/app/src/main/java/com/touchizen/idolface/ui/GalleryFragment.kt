@@ -76,12 +76,13 @@ class GalleryFragment internal constructor() : Fragment() {
 
     /** AndroidX navigation arguments */
     private val args: GalleryFragmentArgs by navArgs()
-    public lateinit var mediaList: MutableList<File>
-    public lateinit var mediaViewPager: ViewPager
+    lateinit var mediaList: MutableList<File>
+    lateinit var mediaViewPager: ViewPager
 
-    public val isFragmentCreated = MutableLiveData(false)
-    public val mapResults: HashMap<Int, List<Classifier.Recognition>> = HashMap()
-    public val mapTimes: HashMap<Int, Long> = HashMap()
+    val isFragmentCreated = MutableLiveData(false)
+    val mapResults: HashMap<Int, List<Classifier.Recognition>> = HashMap()
+    val mapTimes: HashMap<Int, Long> = HashMap()
+    lateinit var swapButton: ImageButton
 
     /** Adapter class used to present a fragment containing one photo or video as a page */
     inner class MediaPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
@@ -135,7 +136,6 @@ class GalleryFragment internal constructor() : Fragment() {
         })
 
 
-
         // Make sure that the cutout "safe area" avoids the screen notch if any
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             // Use extension method to pad "inside" view containing UI using display cutout's bounds
@@ -158,6 +158,12 @@ class GalleryFragment internal constructor() : Fragment() {
             mediaList.getOrNull(mediaViewPager.currentItem)?.let { mediaFile ->
                 ShareUtils.shareScreenshot(requireActivity() as AppCompatActivity,this)
             }
+        }
+
+        swapButton = view.findViewById<ImageButton>(R.id.swap_button)
+        swapButton.setOnClickListener{
+            val fragment = childFragmentManager.fragments.get(mediaViewPager.currentItem) as PhotoFragment
+            fragment.onSwap()
         }
 
         // Handle delete button press

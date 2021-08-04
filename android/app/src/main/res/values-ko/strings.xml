@@ -6,6 +6,7 @@
     <string name="gallery_button_alt">갤러리</string>
     <string name="back_button_alt">뒤로</string>
     <string name="share_button_alt">공유</string>
+    <string name="swap_button_alt">교환</string>
     <string name="share_hint">공유</string>
     <string name="capture_mode_camera">카메라</string>
     <string name="capture_mode_hdr">HDR</string>

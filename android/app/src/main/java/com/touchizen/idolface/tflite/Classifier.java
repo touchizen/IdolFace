@@ -357,7 +357,12 @@ public abstract class Classifier {
             });
 
     for (Map.Entry<String, Float> entry : labelProb.entrySet()) {
-      pq.add(new Recognition("" + entry.getKey(), entry.getKey(), entry.getValue(), null));
+      pq.add(new Recognition(
+              entry.getKey().substring(0,2),
+              entry.getKey().substring(3),
+              entry.getValue(),
+              null
+      ));
     }
 
     final ArrayList<Recognition> recognitions = new ArrayList<>();

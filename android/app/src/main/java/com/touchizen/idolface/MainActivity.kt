@@ -640,8 +640,6 @@ abstract class MainActivity :
                 if (recognition.getTitle() != null) recognitionTextView?.setText(recognition.getTitle())
                 if (recognition.getConfidence() != null) recognitionValueTextView!!.text =
                     String.format("%.2f", 100 * recognition.getConfidence()).toString() + "%"
-
-                //EventBus.getDefault().post(recognition);
             }
             val recognition1: Classifier.Recognition? = results[1]
             if (recognition1 != null) {
