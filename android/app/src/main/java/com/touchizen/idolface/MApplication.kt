@@ -29,7 +29,6 @@ import javax.inject.Inject
 class MApplication : MultiDexApplication(), LifecycleObserver,Configuration.Provider {
     @Inject
     lateinit var preference: MPreference
-
 //    @Inject
 //    lateinit var userDao: ChatUserDao
 //
@@ -43,7 +42,6 @@ class MApplication : MultiDexApplication(), LifecycleObserver,Configuration.Prov
 
     companion object {
         lateinit var instance: MApplication
-            private set
         var isAppRunning = false
         lateinit var appContext: Context
 //        lateinit var userDaoo: ChatUserDao
@@ -62,6 +60,7 @@ class MApplication : MultiDexApplication(), LifecycleObserver,Configuration.Prov
         if (preference.isLoggedIn())
             checkLastDevice()   //looking for does user is logged in another device.if yes,need to shoe dialog for log in again
     }
+
 
 
     override fun getWorkManagerConfiguration() =

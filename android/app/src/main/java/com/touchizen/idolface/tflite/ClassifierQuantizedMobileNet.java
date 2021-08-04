@@ -15,7 +15,12 @@ limitations under the License.
 
 package com.touchizen.idolface.tflite;
 import android.app.Activity;
+
+import com.touchizen.idolface.MApplication;
+
 import java.io.IOException;
+import java.util.Locale;
+
 import org.tensorflow.lite.support.common.TensorOperator;
 import org.tensorflow.lite.support.common.ops.NormalizeOp;
 
@@ -69,14 +74,28 @@ public class ClassifierQuantizedMobileNet extends Classifier {
   @Override
   protected String getLabelPath(Gender gender) {
 
-    if (gender == Gender.FEMALE) {
-      return "female_idol.txt";
-    }
-    else if (gender == Gender.MALE) {
-      return "male_idol.txt";
-    }
+    Locale systemLocale = MApplication.instance.getResources().getConfiguration().locale;
 
-    return "total_idol.txt";
+    String strLangCode = systemLocale.getLanguage();
+
+    if (strLangCode.toUpperCase().equals("KO")) {
+      if (gender == Gender.FEMALE) {
+        return "female_idol.txt";
+      } else if (gender == Gender.MALE) {
+        return "male_idol.txt";
+      }
+
+      return "total_idol.txt";
+    }
+    else {
+      if (gender == Gender.FEMALE) {
+        return "female_idol.en.txt";
+      } else if (gender == Gender.MALE) {
+        return "male_idol.en.txt";
+      }
+
+      return "total_idol.en.txt";
+    }
   }
 
   @Override
