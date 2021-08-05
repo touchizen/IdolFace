@@ -93,7 +93,7 @@
         android:title="@string/pref_title_face_detector_contour_mode"/>
 
     <ListPreference
-        android:defaultValue="@string/pref_entry_values_face_detector_classification_mode_all_classifications"
+        android:defaultValue="@string/pref_entry_values_face_detector_classification_mode_no_classifications"
         android:entries="@array/pref_entries_face_detector_classification_mode"
         android:entryValues="@array/pref_entry_values_face_detector_classification_mode"
         android:key="@string/pref_key_live_preview_face_detection_classification_mode"

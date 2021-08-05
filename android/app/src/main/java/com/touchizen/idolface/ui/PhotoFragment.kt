@@ -329,10 +329,12 @@ open class PhotoFragment internal constructor() :
 
         if (faces.size == 0) {
             sendNoFaceMessage()
+            faceDetectingState.value = DetectState.OnFailure(Exception("no face"))
             return
         }
 
         if ((activity as MainActivity).isProcessingFrame) {
+            faceDetectingState.value = DetectState.OnFailure(Exception("no face"))
             return
         }
 
@@ -352,6 +354,7 @@ open class PhotoFragment internal constructor() :
                 left + width > originalBitmap.width ||
                 top + height> originalBitmap.height) {
                 (activity as MainActivity).isProcessingFrame = false
+                faceDetectingState.value = DetectState.OnFailure(Exception("no face"))
                 return
             }
 
@@ -405,15 +408,13 @@ open class PhotoFragment internal constructor() :
                     faceFaceDone = true
                 }
 
-//                okToSwap = faceFullDone && faceFaceDone
-//
-//                try {
-//                    (parentFragment as GalleryFragment).swapButton.isEnabled = okToSwap
-//                } catch(e: Exception) {
-//                    faceDetectingState.value = DetectState.OnFailure(e)
-//                }
-
                 faceDetectingState.value = DetectState.OnSuccess()
+            }
+            .addOnCanceledListener {
+                faceDetectingState.value = DetectState.OnFailure(Exception("no face"))
+            }
+            .addOnFailureListener {
+                faceDetectingState.value = DetectState.OnFailure(Exception("no face"))
             }
     }
 
@@ -446,7 +447,7 @@ open class PhotoFragment internal constructor() :
                 results[0].title + " --- " +
                 String.format("%.2f", 100 * results[0].confidence).toString() + "%"
 
-        //faceDetectingState.value = DetectState.OnSuccess()
+        faceDetectingState.value = DetectState.OnSuccess()
     }
 
     public fun onSwap() {

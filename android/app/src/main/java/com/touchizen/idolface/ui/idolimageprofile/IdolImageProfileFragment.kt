@@ -1,16 +1,28 @@
 package com.touchizen.idolface.ui.idolimageprofile
 
 import android.app.Activity
+import android.content.ContentValues
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.touchizen.idolface.MainActivity
 import com.touchizen.idolface.R
 import com.touchizen.idolface.databinding.FragmentIdolImageProfileBinding
@@ -19,6 +31,9 @@ import com.touchizen.idolface.model.IdolProfile
 import com.touchizen.idolface.ui.CustomProgressView
 import com.touchizen.idolface.utils.*
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 @AndroidEntryPoint
 class IdolImageProfileFragment : Fragment() {
@@ -28,6 +43,7 @@ class IdolImageProfileFragment : Fragment() {
     private var preference: MPreference? = null
 
     private lateinit var context: Activity
+    private lateinit var fab: FloatingActionButton
 
     private var progressView: CustomProgressView? = null
 
@@ -73,6 +89,9 @@ class IdolImageProfileFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewmodel = viewModel
         progressView = CustomProgressView(context)
+//        binding.fab.setOnClickListener{
+//            onSaveButton()
+//        }
 
         initView()
 
@@ -157,17 +176,9 @@ class IdolImageProfileFragment : Fragment() {
 
     fun onBackButton() {
         NavigationHelper.navigateUp(requireActivity())
-//        Navigation.findNavController(requireActivity(), R.id.fragment_container)
-//            .navigate(R.id.action_to_idolgallery_fragment)
     }
 
     fun onReportButton() {
-
-//        val idolImage = viewModel.idolImage.value
-//        val idolProfile = viewModel.idolProfile.value
-//        Log.d("idolImage",idolImage!!.imageUrl)
-//        Log.d("idolProfile",idolProfile!!.image)
-//        viewModel.idolProfile.value!!.image =idolImage.imageUrl
 
         NavigationHelper.openMyIdolProfile(requireActivity(),
             viewModel.idolProfile.value,
@@ -175,19 +186,52 @@ class IdolImageProfileFragment : Fragment() {
         )
     }
 
-//    private fun getCurrentItem(): Int {
-//        return (recyclerView?.getLayoutManager() as LinearLayoutManager)
-//            .findFirstVisibleItemPosition()
-//    }
-//
-//    private fun setCurrentItem(position: Int, smooth: Boolean) {
-//        if (smooth) {
-//            recyclerView?.smoothScrollToPosition(position)
-//        }
-//        else {
-//            recyclerView?.scrollToPosition(position)
-//        }
-//    }
+    fun onSaveButton() {
+        var idolImage = viewModel.idolImage.value
 
+        Glide.with(this)
+            .asBitmap()
+            .load(idolImage!!.imageUrl)
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
+                    saveBitmap(bitmap)
+                }
+                override fun onLoadCleared(placeholder: Drawable?) {
+                }
+            })
+    }
 
+    @Throws(IOException::class)
+    fun saveBitmap(bitmap: Bitmap): Uri {
+
+        val values = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, ""+ System.currentTimeMillis()+".jpg")
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM)
+        }
+
+        val resolver = context.contentResolver
+        var uri: Uri? = null
+
+        try {
+            uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                ?: throw IOException("Failed to create new MediaStore record.")
+
+            resolver.openOutputStream(uri)?.use {
+                if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 95, it))
+                    throw IOException("Failed to save bitmap.")
+            } ?: throw IOException("Failed to open output stream.")
+
+            return uri
+
+        } catch (e: IOException) {
+
+            uri?.let { orphanUri ->
+                // Don't leave an orphan entry in the MediaStore
+                resolver.delete(orphanUri, null, null)
+            }
+
+            throw e
+        }
+    }
 }
