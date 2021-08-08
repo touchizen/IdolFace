@@ -17,7 +17,7 @@ android {
         applicationId "com.touchizen.idolface"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 4
+        versionCode 6
         versionName "0.9"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary true
@@ -46,10 +46,9 @@ android {
             } else {
                 //applicationIdSuffix ".debug." + normalizedWorkingBranch
                 //resValue "string", "app_name", "IdolFace " + workingBranch
-                applicationIdSuffix ".release"
+                //applicationIdSuffix ".release"
                 archivesBaseName = 'IdolFace_' + normalizedWorkingBranch
             }
-
         }
         release {
             minifyEnabled true
