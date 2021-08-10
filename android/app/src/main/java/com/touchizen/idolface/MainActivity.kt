@@ -139,8 +139,6 @@ abstract class MainActivity :
             connected = false
         }
 
-        //ApiUtils.getIdolList();
-
         try {
             setupDrawer()
             setupBottomSheet()
@@ -148,7 +146,6 @@ abstract class MainActivity :
 
         } catch (e: Exception) {
             Log.d("MainActivity",""+e.toString())
-            //ErrorActivity.reportUiErrorInSnackbar(this, "Setting up drawer", e);
         }
     }
 

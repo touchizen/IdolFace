@@ -198,7 +198,7 @@ class IdolFirestoreFragment : Fragment() {
 
                 viewHolder.swipeLayout.addSwipeListener(this)
 
-                viewHolder.bindData(idol)
+                viewHolder.bind(idol)
             }
 
             override fun onError(e: Exception) {

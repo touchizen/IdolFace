@@ -89,7 +89,7 @@ public class IdolViewHolder extends RecyclerView.ViewHolder {
     }
 
     @SuppressLint("SetTextI18n")
-    public void bindData(IdolProfile idol) {
+    public void bind(IdolProfile idol) {
 
         this.mIdol = idol;
         String imageUrl = idol.getImage();

@@ -100,7 +100,7 @@
 
     <fragment
         android:id="@+id/idol_fragment"
-        android:name="com.touchizen.idolface.ui.idols.IdolFirestoreFragment"
+        android:name="com.touchizen.idolface.ui.idols.IdolsFragment"
         android:label="IdolFragment" >
 
         <action

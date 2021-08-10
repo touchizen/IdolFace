@@ -23,7 +23,7 @@ public class ApiUtils {
 		try {
 			OkHttpClient client = new OkHttpClient();
 
-			String url = "https://deepshadowing.com/api/data.json";
+			String url = "https://touchizen.com/idolface/api/data.json";
 
 			Request request = new Request.Builder()
 					.addHeader("Authorization", "TEST AUTH")
@@ -52,7 +52,7 @@ public class ApiUtils {
 		OkHttpClient client = new OkHttpClient();
 		// GET request
 		Request request = new Request.Builder()
-				.url("https://deepshadowing.com/api/data.json")
+				.url("https://touchizen.com/idolface/api/data.json")
 				.build();
 
 		client.newCall(request).enqueue(

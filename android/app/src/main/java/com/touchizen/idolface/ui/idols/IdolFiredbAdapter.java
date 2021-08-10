@@ -43,7 +43,7 @@ public class IdolFiredbAdapter extends FirebaseRecyclerPagingAdapter<IdolProfile
 
         //if (model.getItemType().getTypeCode() != ItemType.LOAD.getTypeCode()) {
         model.setId(idolRef.getKey());
-        viewHolder.bindData(model);
+        viewHolder.bind(model);
         //}
     }
 
