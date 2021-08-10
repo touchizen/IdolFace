@@ -1,22 +1,31 @@
 package com.touchizen.idolface.ui.idols
 
 import android.app.Dialog
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.touchizen.idolface.MainActivity
 import com.touchizen.idolface.R
 import com.touchizen.idolface.model.IdolProfile
 
+val IDOL_COMPARATOR = object : DiffUtil.ItemCallback<IdolProfile>() {
+    override fun areItemsTheSame(oldItem: IdolProfile, newItem: IdolProfile): Boolean =
+        // User ID serves as unique ID
+        oldItem.id == newItem.id
+
+    override fun areContentsTheSame(oldItem: IdolProfile, newItem: IdolProfile): Boolean =
+        // Compare full contents (note: Java users should call .equals())
+        oldItem == newItem
+}
+
 class IdolsAdapter(
     val items: List<IdolProfile>,
     fragment: IdolsFragment,
     dialog: Dialog
-) : RecyclerView.Adapter<IdolViewHolder>() {
+) : PagingDataAdapter<IdolProfile, IdolViewHolder>(IDOL_COMPARATOR){
 
     val mDialog: Dialog = dialog
     val mSwipeContainer: SwipeRefreshLayout? = fragment.swipeContainer

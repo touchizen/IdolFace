@@ -168,12 +168,12 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-firestore:5.0.0'
 
     //Android Paging Libray
-    implementation "androidx.paging:paging-runtime:2.1.2" // use -ktx for Kotlin
+    implementation "androidx.paging:paging-runtime:3.0.1" // use -ktx for Kotlin
     //implementation "androidx.paging:paging-runtime:3.1.0-alpha01-ktx" // use -ktx for Kotlin
-    //implementation 'android.arch.paging:runtime:1.0.1'
-
+    //implementation "androidx.paging:paging-rxjava2:3.0.1"
+    //implementation "androidx.paging:paging-guava:3.0.1"
     // alternatively - without Android dependencies for testing
-    testImplementation "androidx.paging:paging-common:2.1.2" // use -ktx for
+    testImplementation "androidx.paging:paging-common:3.0.1" // use -ktx for
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
 
     implementation 'com.google.code.gson:gson:2.8.7'
