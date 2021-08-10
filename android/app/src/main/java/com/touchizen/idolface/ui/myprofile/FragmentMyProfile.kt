@@ -103,6 +103,7 @@ class FragmentMyProfile : Fragment(R.layout.fragment_my_profile) {
                 is LoadState.OnSuccess -> {
                     progressView?.dismiss()
                     NavigationHelper.navigateUp(requireActivity())
+                    (requireActivity() as MainActivity).onProfileChanged()
                 }
                 is LoadState.OnLoading -> {
                     progressView?.show()

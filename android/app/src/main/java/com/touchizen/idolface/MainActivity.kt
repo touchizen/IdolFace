@@ -337,6 +337,10 @@ abstract class MainActivity :
         NavigationHelper.signOut(this)
     }
 
+    fun onProfileChanged() {
+        onResume()
+    }
+
     fun onLoginFinished() {
         onResume()
     }
