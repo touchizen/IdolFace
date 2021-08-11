@@ -1,8 +1,21 @@
 # 아이돌 페이스 IdolFace
 
+<a href='https://play.google.com/store/apps/details?id=com.touchizen.idolface'><img src='https://touchizen.com/assets/images/google-play.png' alt='Get it on Google Play' height=45/></a>
+<!--a href='https://f-droid.org/packages/com.touchizen.idolface'><img src='https://touchizen.com/assets/images/f-droid.png' alt='Get it on F-Droid' height=45 ></a-->
+
 ### 개요
 
 이앱은 머신러닝을 활용해서, 아이돌 얼굴 닮은꼴을 찾아주는 앱입니다.
+
+[![Video Label](http://img.youtube.com/vi/krlLu294n00/0.jpg)](https://youtu.be/krlLu294n00?t=0s)
+
+인터넷에서 상당한 순위에 오른, 고른 약 37명의 남여 아이돌을 골라, 사진을 수집한 후에
+머신러닝으로 훈련시켜 '닮은꼴'을 찾아주며, 얼굴을 변환(교환) 시켜주는 앱입니다.
+   
+사용자분들이 사진을 모아 올려주면, 1,000장이 넘어가는 아이돌이나, 개인을 다시 훈련시켜
+닮은 꼴을 찾는 아이돌 얼굴을 증가시키는 방향으로 하겠습니다.
+   
+소스도 오픈할 예정이라, 코딩등 다양한 방법으로 기여할 의사가 있으신 분은 얼마든지 환영합니다.
 
 ### 주요기능
 
@@ -36,14 +49,12 @@
 ### 기타.
 
 *  제작 과정을 유투브 영상으로 제작하여 공유할 예정입니다. 기다려 주시기 바랍니다.
-<!--
+<
 * 텐서플로우로 만들어진 머신러닝 모델을 안드로이드 앱으로 제작하기 위해서, Tenforflow-lite 모델로 변경.
 * 안드로이드 앱으로 포팅.
-* 제작 과정을 유투브 동영상 제작 = https://youtu.be/vL0J0Fyfa4k
+* 제작 과정을 유투브 동영상 제작 = https://youtu.be/krlLu294n00
 
-[![Video Label](http://img.youtube.com/vi/vL0J0Fyfa4k/0.jpg)](https://youtu.be/vL0J0Fyfa4k?t=0s)
-
-<img src="https://storage.googleapis.com/khanhlvg-public.appspot.com/digit-classifier/screenshot_android.png" /-->
+[![Video Label](http://img.youtube.com/vi/krlLu294n00/0.jpg)](https://youtu.be/krlLu294n00?t=0s)
 
 ### 라이센스와 저자
 
