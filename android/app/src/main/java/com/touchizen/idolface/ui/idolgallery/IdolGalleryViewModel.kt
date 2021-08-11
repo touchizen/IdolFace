@@ -58,7 +58,7 @@ constructor(
 
     private lateinit var uploadTask: UploadTask
 
-    val flow = Pager(PagingConfig(10,2)) {
+    val flow = Pager(PagingConfig(15)) {
         IdolGalleryPagingSource(FirebaseFirestore.getInstance(), idolProfile)
     }.flow.cachedIn(viewModelScope)
 
