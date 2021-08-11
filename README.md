@@ -7,7 +7,7 @@
 
 이앱은 머신러닝을 활용해서, 아이돌 얼굴 닮은꼴을 찾아주는 앱입니다.
 https://youtu.be/krlLu294n00
-[![Video Label](https://touchizen.com/assets/images/idolface_yt.png)](https://youtu.be/krlLu294n00?t=0s)
+[![Video Label](https://touchizen.com/assets/images/idolface_yt.jpg)](https://youtu.be/krlLu294n00?t=0s)
 
 인터넷에서 상당한 순위에 오른, 고른 약 37명의 남여 아이돌을 골라, 사진을 수집한 후에
 머신러닝으로 훈련시켜 '닮은꼴'을 찾아주며, 얼굴을 변환(교환) 시켜주는 앱입니다.
