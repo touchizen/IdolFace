@@ -54,7 +54,7 @@ https://youtu.be/krlLu294n00
 * 안드로이드 앱으로 포팅.
 * 제작 과정을 유투브 동영상 제작 = https://youtu.be/krlLu294n00
 
-[![Video Label](http://img.youtube.com/vi/krlLu294n00/0.jpg)](https://youtu.be/krlLu294n00?t=0s)
+[![Video Label](https://touchizen.com/assets/images/idolface_yt.jpg)](https://youtu.be/krlLu294n00?t=0s)
 
 ### 라이센스와 저자
 
