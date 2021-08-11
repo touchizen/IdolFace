@@ -86,7 +86,6 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.5.10"
     implementation 'androidx.core:core-ktx:1.6.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
@@ -94,6 +93,10 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.11'
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.3"
 
     // for Multidex.
     implementation "androidx.multidex:multidex:2.0.1"

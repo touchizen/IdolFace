@@ -7,6 +7,10 @@ import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.UploadTask
@@ -30,6 +34,8 @@ constructor(
     //val isUploading = MutableLiveData(false)
     val checkIdolImageState = MutableLiveData<LoadState>()
 
+    val idolGalleryState = MutableLiveData<LoadState>()
+
     //var imageId = MutableLiveData(IdolUtils.getGalleryUniqueId())
     var imageId = MutableLiveData(IdolUtils.getGalleryUniqueId())
     var imageUrl= MutableLiveData("")
@@ -51,6 +57,10 @@ constructor(
     private lateinit var docIdolProfileRef : DocumentReference // = IdolUtils.getDocumentRef(context, idolId.value!!)
 
     private lateinit var uploadTask: UploadTask
+
+    val flow = Pager(PagingConfig(10,2)) {
+        IdolGalleryPagingSource(FirebaseFirestore.getInstance(), idolProfile)
+    }.flow.cachedIn(viewModelScope)
 
 
     init {

@@ -9,11 +9,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
@@ -36,6 +40,10 @@ import com.touchizen.idolface.ui.CustomProgressView
 import com.touchizen.idolface.utils.*
 import com.touchizen.swipe.SwipeLayout
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import java.lang.Exception
 
 @AndroidEntryPoint
 class IdolGalleryFragment : Fragment() {
@@ -46,17 +54,18 @@ class IdolGalleryFragment : Fragment() {
 
     private lateinit var context: Activity
 
-    private lateinit var mAdapter: FirestorePagingAdapter<IdolImage, IdolGalleryViewHolder>
+    //private lateinit var mAdapter: FirestorePagingAdapter<IdolImage, IdolGalleryViewHolder>
+    private lateinit var mAdapter: IdolGalleryAdapter
     private val mFirestore = FirebaseFirestore.getInstance()
-    private val mIdolGalleryCollection = mFirestore.collection(IdolUtils.IDOLGALLERY_COLLECTION)
-    private lateinit var mQuery : Query
+    //private val mIdolGalleryCollection = mFirestore.collection(IdolUtils.IDOLGALLERY_COLLECTION)
+    //private lateinit var mQuery : Query
     private var recyclerView : RecyclerView? = null
     private var fab : FloatingActionButton? = null
     private var swipeContainer : SwipeRefreshLayout? = null
     private var mToolbar: Toolbar? = null
 
     private var progressView: CustomProgressView? = null
-    private val viewModel: IdolGalleryViewModel by viewModels()
+    val viewModel: IdolGalleryViewModel by viewModels()
 
     fun getInstance() : IdolGalleryFragment {
         if (instance == null) {
@@ -137,11 +146,25 @@ class IdolGalleryFragment : Fragment() {
                 else -> {}
             }
         })
+
+        viewModel.idolGalleryState.observe(viewLifecycleOwner, {
+            when (it) {
+                is LoadState.OnSuccess -> {
+                    swipeContainer!!.isRefreshing = false
+                }
+                is LoadState.OnFailure -> {
+                    swipeContainer!!.isRefreshing = false
+                }
+                is LoadState.OnLoading -> {
+                    swipeContainer!!.isRefreshing = true
+                }
+                else -> {}
+            }
+        })
     }
 
 
     private fun initVars() {
-        mQuery = getQuery()
         viewModel.initVars()
     }
 
@@ -209,12 +232,6 @@ class IdolGalleryFragment : Fragment() {
                 String.format("(%s)",secondJob)
     }
 
-    fun getQuery(): Query {
-        return mIdolGalleryCollection
-            .whereEqualTo("idolId", viewModel.idolProfile.value!!.id)
-            .orderBy("createdAt", Query.Direction.DESCENDING)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val imagePath: Uri? = ImageUtils.getPhotoUri(data)
@@ -229,9 +246,6 @@ class IdolGalleryFragment : Fragment() {
         (requireActivity() as MainActivity).setDrawerLockedClosed()
         (requireActivity() as MainActivity).supportActionBar!!.hide()
         (requireActivity() as MainActivity).setBottomsheetHidden(true)
-        if (mAdapter != null) {
-            mAdapter.startListening()
-        }
     }
 
     override fun onStop() {
@@ -239,7 +253,6 @@ class IdolGalleryFragment : Fragment() {
         (requireActivity() as MainActivity).setDrawerUnlocked()
         (requireActivity() as MainActivity).supportActionBar!!.show()
         (requireActivity() as MainActivity).setBottomsheetHidden(false)
-        mAdapter.stopListening()
     }
 
     fun onBackButton() {
@@ -248,127 +261,168 @@ class IdolGalleryFragment : Fragment() {
     }
 
     private fun setupAdapter() {
+        mAdapter = IdolGalleryAdapter(this)
+        recyclerView?.adapter = mAdapter
 
-        // Init Paging Configuration
-        val config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPrefetchDistance(2)
-            .setPageSize(10)
-            .build()
-
-        // Init Adapter Configuration
-        val options = FirestorePagingOptions.Builder<IdolImage>()
-            .setLifecycleOwner(this)
-            .setQuery(mQuery, config, IdolImage::class.java)
-            .build()
-
-        // Instantiate Paging Adapter
-        mAdapter = object : FirestorePagingAdapter<IdolImage, IdolGalleryViewHolder>(options),
-            SwipeLayout.SwipeListener
-        {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IdolGalleryViewHolder {
-                val view = layoutInflater.inflate(R.layout.item_idol_gallery, parent, false)
-                return IdolGalleryViewHolder(view, createOnClickListener(), requireActivity())
-            }
-
-            override fun onBindViewHolder(viewHolder: IdolGalleryViewHolder, position: Int, idolImage: IdolImage) {
-                // Bind to ViewHolder
-
-                idolImage.id = getItem(position)?.id!!
-                viewHolder.swipeLayout.showMode = SwipeLayout.ShowMode.PullOut
-                viewHolder.swipeLayout.addDrag(
-                    SwipeLayout.DragEdge.Right,
-                    viewHolder.swipeLayout.findViewById<View>(R.id.right_view)
-                )
-
-                viewHolder.swipeLayout.getSurfaceView().setOnClickListener {
-                    NavigationHelper.openIdolImageProfile(
-                        requireActivity(),
-                        idolImage,
-                        viewModel.idolProfile.value
-                    )
-                }
-
-                viewHolder.swipeLayout.findViewById<View>(R.id.favorite).setOnClickListener{
-                }
-
-                viewHolder.swipeLayout.findViewById<View>(R.id.idol_profile).setOnClickListener{
-                }
-
-                viewHolder.swipeLayout.addSwipeListener(this)
-
-                viewHolder.bindData(idolImage)
-            }
-
-            override fun onError(e: Exception) {
-                super.onError(e)
-                e.message?.let { Log.e("IdolGallery===", it) }
-            }
-
-            override fun onLoadingStateChanged(state: LoadingState) {
-                when (state) {
-                    LoadingState.LOADING_INITIAL -> {
-                        swipeContainer!!.isRefreshing = true
-                    }
-
-                    LoadingState.LOADING_MORE -> {
-                        swipeContainer!!.isRefreshing = true
-                    }
-
-                    LoadingState.LOADED -> {
-                        swipeContainer!!.isRefreshing = false
-                    }
-
-                    LoadingState.ERROR -> {
-                        Toast.makeText(
-                            requireContext(),
-                            "Error Occurred!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        swipeContainer!!.isRefreshing = false
-                    }
-
-                    LoadingState.FINISHED -> {
-                        swipeContainer!!.isRefreshing = false
-                    }
-                }
-            }
-
-            /**
-             * SwipeLayout.SwipeListener events.
-             */
-            fun showDropright(layout: SwipeLayout?) {
-                val ivDropRight = layout?.findViewById<ImageView>(R.id.dropright)
-                ivDropRight?.setImageResource(R.drawable.ic_arrow_dropright)
-
-            }
-            fun showDropleft(layout: SwipeLayout?) {
-                val ivDropRight = layout?.findViewById<ImageView>(R.id.dropright)
-                ivDropRight?.setImageResource(R.drawable.ic_arrow_dropleft)
-            }
-
-            override fun onStartOpen(layout: SwipeLayout?) {
-                showDropright(layout)
-            }
-
-            override fun onOpen(layout: SwipeLayout?) {
-                showDropright(layout)
-            }
-
-            override fun onStartClose(layout: SwipeLayout?) {
-                showDropleft(layout)
-            }
-
-            override fun onClose(layout: SwipeLayout?) {
-                showDropleft(layout)
-            }
-
-            override fun onUpdate(layout: SwipeLayout?, leftOffset: Int, topOffset: Int) {
-            }
-
-            override fun onHandRelease(layout: SwipeLayout?, xvel: Float, yvel: Float) {
+        lifecycleScope.launch {
+            viewModel.flow.collectLatest {
+                mAdapter.submitData(it)
             }
         }
+
+        lifecycleScope.launch {
+            mAdapter.loadStateFlow.collectLatest { loadStates ->
+
+                when(loadStates.refresh) {
+                    is androidx.paging.LoadState.Loading ->
+                        viewModel.idolGalleryState.value = LoadState.OnLoading
+                    is androidx.paging.LoadState.NotLoading ->
+                        viewModel.idolGalleryState.value = LoadState.OnSuccess()
+                    is androidx.paging.LoadState.Error ->
+                        viewModel.idolGalleryState.value = LoadState.OnFailure(Exception("refresh error"))
+                }
+                when(loadStates.append) {
+                    is androidx.paging.LoadState.Loading ->
+                        viewModel.idolGalleryState.value = LoadState.OnLoading
+                    is androidx.paging.LoadState.NotLoading ->
+                        viewModel.idolGalleryState.value = LoadState.OnSuccess()
+                    is androidx.paging.LoadState.Error ->
+                        viewModel.idolGalleryState.value = LoadState.OnFailure(Exception("append error"))
+                }
+                when(loadStates.prepend) {
+                    is androidx.paging.LoadState.Loading ->
+                        viewModel.idolGalleryState.value = LoadState.OnLoading
+                    is androidx.paging.LoadState.NotLoading ->
+                        viewModel.idolGalleryState.value = LoadState.OnSuccess()
+                    is androidx.paging.LoadState.Error ->
+                        viewModel.idolGalleryState.value = LoadState.OnFailure(Exception("prepend error"))
+                }
+            }
+        }
+    }
+
+    private fun setupAdapterOld() {
+
+        // Init Paging Configuration
+//        val config = PagedList.Config.Builder()
+//            .setEnablePlaceholders(false)
+//            .setPrefetchDistance(2)
+//            .setPageSize(10)
+//            .build()
+//
+//        // Init Adapter Configuration
+//        val options = FirestorePagingOptions.Builder<IdolImage>()
+//            .setLifecycleOwner(this)
+//            .setQuery(mQuery, config, IdolImage::class.java)
+//            .build()
+
+        // Instantiate Paging Adapter
+//        mAdapter = object : FirestorePagingAdapter<IdolImage, IdolGalleryViewHolder>(options),
+//            SwipeLayout.SwipeListener
+//        {
+//            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IdolGalleryViewHolder {
+//                val view = layoutInflater.inflate(R.layout.item_idol_gallery, parent, false)
+//                return IdolGalleryViewHolder(view, createOnClickListener(), requireActivity())
+//            }
+//
+//            override fun onBindViewHolder(viewHolder: IdolGalleryViewHolder, position: Int, idolImage: IdolImage) {
+//                // Bind to ViewHolder
+//
+//                idolImage.id = getItem(position)?.id!!
+//                viewHolder.swipeLayout.showMode = SwipeLayout.ShowMode.PullOut
+//                viewHolder.swipeLayout.addDrag(
+//                    SwipeLayout.DragEdge.Right,
+//                    viewHolder.swipeLayout.findViewById<View>(R.id.right_view)
+//                )
+//
+//                viewHolder.swipeLayout.getSurfaceView().setOnClickListener {
+//                    NavigationHelper.openIdolImageProfile(
+//                        requireActivity(),
+//                        idolImage,
+//                        viewModel.idolProfile.value
+//                    )
+//                }
+//
+//                viewHolder.swipeLayout.findViewById<View>(R.id.favorite).setOnClickListener{
+//                }
+//
+//                viewHolder.swipeLayout.findViewById<View>(R.id.idol_profile).setOnClickListener{
+//                }
+//
+//                viewHolder.swipeLayout.addSwipeListener(this)
+//
+//                viewHolder.bind(idolImage)
+//            }
+//
+//            override fun onError(e: Exception) {
+//                super.onError(e)
+//                e.message?.let { Log.e("IdolGallery===", it) }
+//            }
+//
+//            override fun onLoadingStateChanged(state: LoadingState) {
+//                when (state) {
+//                    LoadingState.LOADING_INITIAL -> {
+//                        swipeContainer!!.isRefreshing = true
+//                    }
+//
+//                    LoadingState.LOADING_MORE -> {
+//                        swipeContainer!!.isRefreshing = true
+//                    }
+//
+//                    LoadingState.LOADED -> {
+//                        swipeContainer!!.isRefreshing = false
+//                    }
+//
+//                    LoadingState.ERROR -> {
+//                        Toast.makeText(
+//                            requireContext(),
+//                            "Error Occurred!",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                        swipeContainer!!.isRefreshing = false
+//                    }
+//
+//                    LoadingState.FINISHED -> {
+//                        swipeContainer!!.isRefreshing = false
+//                    }
+//                }
+//            }
+//
+//            /**
+//             * SwipeLayout.SwipeListener events.
+//             */
+//            fun showDropright(layout: SwipeLayout?) {
+//                val ivDropRight = layout?.findViewById<ImageView>(R.id.dropright)
+//                ivDropRight?.setImageResource(R.drawable.ic_arrow_dropright)
+//
+//            }
+//            fun showDropleft(layout: SwipeLayout?) {
+//                val ivDropRight = layout?.findViewById<ImageView>(R.id.dropright)
+//                ivDropRight?.setImageResource(R.drawable.ic_arrow_dropleft)
+//            }
+//
+//            override fun onStartOpen(layout: SwipeLayout?) {
+//                showDropright(layout)
+//            }
+//
+//            override fun onOpen(layout: SwipeLayout?) {
+//                showDropright(layout)
+//            }
+//
+//            override fun onStartClose(layout: SwipeLayout?) {
+//                showDropleft(layout)
+//            }
+//
+//            override fun onClose(layout: SwipeLayout?) {
+//                showDropleft(layout)
+//            }
+//
+//            override fun onUpdate(layout: SwipeLayout?, leftOffset: Int, topOffset: Int) {
+//            }
+//
+//            override fun onHandRelease(layout: SwipeLayout?, xvel: Float, yvel: Float) {
+//            }
+//        }
 
         // Finally Set the Adapter to RecyclerView
         recyclerView!!.adapter = mAdapter

@@ -10,24 +10,19 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.touchizen.idolface.MainActivity
 import com.touchizen.idolface.R
 import com.touchizen.idolface.api.ApiFactory
 import com.touchizen.idolface.api.PlaceholderApi
 import com.touchizen.idolface.databinding.FragmentIdolsBinding
 import com.touchizen.idolface.model.IdolProfile
-import com.touchizen.idolface.utils.DividerItemDecoration
-import com.touchizen.idolface.utils.IdolUtils
-import com.touchizen.idolface.utils.MPreference
-import com.touchizen.idolface.utils.NavigationHelper
+import com.touchizen.idolface.utils.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -46,6 +41,8 @@ class IdolsFragment : Fragment() {
     private var fab : FloatingActionButton? = null
     var swipeContainer : SwipeRefreshLayout? = null
     private var mToolbar: Toolbar? = null
+
+    val viewModel: IdolsViewModel by viewModels()
 
     fun getInstance() : IdolsFragment {
         if (instance == null) {
@@ -82,6 +79,7 @@ class IdolsFragment : Fragment() {
         initSwipe()
         initToobar()
 
+        subscribeObservers()
     }
 
     private fun initPreference() {
@@ -128,7 +126,7 @@ class IdolsFragment : Fragment() {
     fun initSwipe() {
         swipeContainer = binding.swipeContainer
         swipeContainer?.setOnRefreshListener {
-            //mAdapter.refresh()
+            launchAdapter()
         }
     }
 
@@ -139,6 +137,23 @@ class IdolsFragment : Fragment() {
         }
     }
 
+    private fun subscribeObservers() {
+        viewModel.idolsProfileState.observe(viewLifecycleOwner, {
+            when (it) {
+                is LoadState.OnSuccess -> {
+                    swipeContainer!!.isRefreshing = false
+                }
+                is LoadState.OnFailure -> {
+                    swipeContainer!!.isRefreshing = false
+                }
+                is LoadState.OnLoading -> {
+                    swipeContainer!!.isRefreshing = true
+                }
+                else -> {}
+            }
+        })
+    }
+
     suspend fun setupAdapter(service: PlaceholderApi) {
         val idolRequest = service.getIdols()
         try {
@@ -147,18 +162,25 @@ class IdolsFragment : Fragment() {
                 val idols = response.body()
                 mAdapter = IdolsAdapter(idols!!,this, mDialog)
                 recyclerView!!.adapter = mAdapter
+                viewModel.idolsProfileState.value = LoadState.OnSuccess()
             }else{
                 Log.d("MainActivity ",response.errorBody().toString())
+                viewModel.idolsProfileState.value = LoadState.OnFailure(
+                    Exception(response.errorBody().toString())
+                )
             }
 
         }catch (e: Exception){
-
+            viewModel.idolsProfileState.value = LoadState.OnFailure(e)
         }
 
     }
 
     @DelicateCoroutinesApi
     fun launchAdapter() {
+
+        viewModel.idolsProfileState.value = LoadState.OnLoading
+
         val service = ApiFactory.placeholderApi
         GlobalScope.launch(Dispatchers.Main) {
             setupAdapter(service)

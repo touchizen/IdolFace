@@ -20,7 +20,7 @@ public class IdolGalleryViewHolder extends RecyclerView.ViewHolder {
     public static final String TAG = IdolGalleryViewHolder.class.getSimpleName();
     public static final int MAX_TEXT_LENGTH_IN_LIST = 300; //characters
 
-    protected Context context;
+    public Context context;
     public SwipeLayout swipeLayout;
     public ImageView ivFavorite;
     public ImageView ivIdolProfile;
@@ -28,7 +28,7 @@ public class IdolGalleryViewHolder extends RecyclerView.ViewHolder {
     private ImageView ivIdolImage;
     private TextView  tvUserName;
     private IdolImage mIdolImage;
-    private Activity activity;
+    public Activity activity;
 
     public IdolGalleryViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -80,7 +80,7 @@ public class IdolGalleryViewHolder extends RecyclerView.ViewHolder {
     }
 
     @SuppressLint("SetTextI18n")
-    public void bindData(IdolImage idolImage) {
+    public void bind(IdolImage idolImage) {
 
         this.mIdolImage = idolImage;
         String imageUrl = idolImage.getImageUrl();
