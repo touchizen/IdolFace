@@ -32,10 +32,10 @@ https://youtu.be/krlLu294n00
 
 ### 머시러닝 사용기술
 
-* 얼굴인식(Face Detection): 얼굴인식기술로 구글에서 만들어진 API를 사용합니다.
+* 얼굴인식(Face Detection): 얼굴인식기술로 구글에서 만들어진 API를 사용합니다. <br/>
     link: https://developers.google.com/ml-kit/vision/face-detection/android?hl=ko
     
-* 아이돌 분류(Idol Classification): 이미지 분류 기술을 사용합니다. 
+* 아이돌 분류(Idol Classification): 이미지 분류 기술을 사용합니다. <br/>
     link: https://github.com/tuxxon/FlowerClassifier
 
 ### 후원 및 기여
